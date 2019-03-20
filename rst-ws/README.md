@@ -1,22 +1,16 @@
-# Restaurant Web Service
+# Points Web Service client
 
 ## Authors
 
-Group CXX
+Group A65
 
 ### Lead developer 
 
-... ... ...
-
-_preencher com nome, número e GitHub ID de membro do grupo que liderou esta parte e depois apagar esta linha_
+Ricardo Nunes 71015 git-ricnunes
 
 ### Contributors
 
-... ... ...
 
-... ... ...
-
-_preencher com nome, número e GitHub ID dos membro do grupo que contribuiram com código para esta parte e depois apagar esta linha_
 
 ## About
 
