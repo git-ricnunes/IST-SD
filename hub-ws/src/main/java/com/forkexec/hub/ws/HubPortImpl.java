@@ -5,6 +5,7 @@ import java.util.List;
 import javax.jws.WebService;
 
 import com.forkexec.hub.domain.Hub;
+import com.forkexec.hub.ws.*;
 
 /**
  * This class implements the Web Service port type (interface). The annotations
