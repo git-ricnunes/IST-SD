@@ -1,11 +1,12 @@
 package com.forkexec.rst.ws;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.jws.WebService;
 
 import com.forkexec.rst.domain.Restaurant;
-
+import com.forkexec.rst.domain.Food;
 /**
  * This class implements the Web Service port type (interface). The annotations
  * below "map" the Java class to the WSDL definitions.
@@ -34,14 +35,33 @@ public class RestaurantPortImpl implements RestaurantPortType {
 	
 	@Override
 	public Menu getMenu(MenuId menuId) throws BadMenuIdFault_Exception {
-		// TODO Auto-generated method stub
-		return null;
+		
+		Collection<Food> restMenus = Restaurant.getInstance().getMenus();
+		Food retMenu = null;
+		
+		synchronized (restMenus) {
+			
+			for(Food menu : restMenus)
+				if(menuId.getId().equals(menu.getId()))
+					retMenu=menu;
+		}
+		return buildMenu(retMenu);
 	}
 	
 	@Override
 	public List<Menu> searchMenus(String descriptionText) throws BadTextFault_Exception {
-		// TODO Auto-generated method stub
-		return null;
+		
+		List<Menu> retMenus = null;
+		Collection<Food> restMenus = Restaurant.getInstance().getMenus();
+
+		synchronized (restMenus) {
+		
+			for(Food menu : restMenus)
+				if(menu.getEntrada().contains(descriptionText))
+					retMenus.add(buildMenu(menu));
+		
+		}
+		return retMenus;
 	}
 
 	@Override
@@ -87,16 +107,19 @@ public class RestaurantPortImpl implements RestaurantPortType {
 
 	// View helpers ----------------------------------------------------------
 
-	// /** Helper to convert a domain object to a view. */
-	// private ParkInfo buildParkInfo(Park park) {
-		// ParkInfo info = new ParkInfo();
-		// info.setId(park.getId());
-		// info.setCoords(buildCoordinatesView(park.getCoordinates()));
-		// info.setCapacity(park.getMaxCapacity());
-		// info.setFreeSpaces(park.getFreeDocks());
-		// info.setAvailableCars(park.getAvailableCars());
-		// return info;
-	// }
+	 /** Helper to convert a domain object to a view. */
+	 private Menu buildMenu (Food menu) {
+		 Menu retMenu = new Menu();
+		 MenuId menuid = new MenuId();
+		 menuid.setId(menu.getId());
+		 retMenu.setId(menuid);
+		 retMenu.setEntree(menu.getEntrada());
+		 retMenu.setPlate(menu.getPrincipal());
+		 retMenu.setDessert(menu.getSobremesa());
+		 retMenu.setPreparationTime(menu.getTempoDeConfecao());
+		 retMenu.setPrice(menu.getPreco());
+		 return retMenu;
+	 }
 
 	
 	// Exception helpers -----------------------------------------------------

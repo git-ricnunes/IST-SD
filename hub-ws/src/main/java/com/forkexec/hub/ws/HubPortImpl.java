@@ -1,17 +1,20 @@
 package com.forkexec.hub.ws;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.jws.WebService;
+import com.forkexec.hub.domain.*;
+import com.forkexec.rst.ws.cli.RestaurantClient;
 
-import com.forkexec.hub.domain.Hub;
-import com.forkexec.hub.ws.*;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 
 /**
  * This class implements the Web Service port type (interface). The annotations
  * below "map" the Java class to the WSDL definitions.
  */
-@WebService(endpointInterface = "com.forkexec.pts.ws.HubPortType",
+@WebService(endpointInterface = "com.forkexec.hub.ws.HubPortType",
             wsdlLocation = "HubService.wsdl",
             name ="HubWebService",
             portName = "HubPort",
@@ -116,6 +119,41 @@ public class HubPortImpl implements HubPortType {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Hello ").append(inputMessage);
 		builder.append(" from ").append(wsName);
+		
+		
+		Collection<String> restsUrls = null;
+		try {
+			UDDINaming uddiNaming = endpointManager.getUddiNaming();
+			restsUrls = uddiNaming.list("A65_Restaurant"+ "%");
+			builder.append("Found ");
+			builder.append(restsUrls.size());
+			builder.append(" restaurants on UDDI.\n");
+		} catch(UDDINamingException e) {
+			builder.append("Failed to contact the UDDI server:");
+			builder.append(e.getMessage());
+			builder.append(" (");
+			builder.append(e.getClass().getName());
+			builder.append(")");
+			return builder.toString();
+		}
+
+		for(String restUrl : restsUrls) {
+			builder.append("Ping result for restaurants at ");
+			builder.append(restUrl);
+			builder.append(":");
+			try {
+				RestaurantClient client = new RestaurantClient(restUrl);
+				String supplierPingResult = client.ctrlPing(endpointManager.getWsName());
+				builder.append(supplierPingResult);
+			} catch(Exception e) {
+				builder.append(e.getMessage());
+				builder.append(" (");
+				builder.append(e.getClass().getName());
+				builder.append(")\n");
+			}
+			builder.append("\n");
+		}
+		
 		return builder.toString();
 	}
 
