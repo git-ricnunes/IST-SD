@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.forkexec.rst.ws.BadInitFault_Exception;
+import com.forkexec.rst.ws.Menu;
+import com.forkexec.rst.ws.MenuId;
 
 /**
  * Restaurant
@@ -22,13 +24,14 @@ public class Restaurant {
 	
 	private String id;
 	private Collection<Food> Menus = null;
+	private String orderid;
 	
 	
 	// Singleton -------------------------------------------------------------
 
 	/** Private constructor prevents instantiation from other classes. */
 	private Restaurant() {
-		// Initialization of default values
+		reset();
 	}
 
 	/**
@@ -46,11 +49,29 @@ public class Restaurant {
 
 	// TODO 
 	
-	public synchronized void init(String id ,Collection<Food> menus) throws BadInitFault_Exception {
- 		if(id.equals(""))
- 			throw new BadInitFault_Exception("Restaurant ID cannot be empty", null);
-		this.Menus = menus;
+	public synchronized void init(Collection<Food> menus) throws BadInitFault_Exception {
+ 		if(menus.isEmpty())
+ 			throw new BadInitFault_Exception("Failed to initiate restaurant", null);
+		this.id=id;
+ 		this.Menus = menus;
+ 		this.orderid="0";
  	}
+	
+	public synchronized void reset() {
+		this.Menus.clear();
+		this.orderid="0";
+	}
+	
+	public synchronized Food getMenu(MenuId menuid) {
+		
+		Food retMenu = null;
+		
+		for(Food menu : Menus)
+			if(menuid.getId().equals(menu.getId()))
+				retMenu=menu;
+		
+		return retMenu;
+	}
 
 
 	public String getId() {
@@ -60,6 +81,15 @@ public class Restaurant {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+	
+	public String getOrderId() {
+		return orderid;
+	}
+
+
+	public void setOrderId(String orderid) {
+		this.orderid = orderid;
 	}
 
 

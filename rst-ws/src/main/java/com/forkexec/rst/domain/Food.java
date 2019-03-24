@@ -8,9 +8,13 @@ public class Food {
 	String sobremesa;
 	int preco;
 	int tempoDeConfecao;
+	int quantidade;
 	
+	public Food() {
+		super();
+	}
 	
-	public Food(String id, String entrada, String principal, String sobremesa,int preco, int tempoDeConfecao) {
+	public Food(String id, String entrada, String principal, String sobremesa,int preco, int tempoDeConfecao,int quantidade) {
 		super();
 		this.id = id;
 		this.entrada = entrada;
@@ -18,8 +22,17 @@ public class Food {
 		this.sobremesa = sobremesa;
 		this.preco=preco;
 		this.tempoDeConfecao = tempoDeConfecao;
+		this.quantidade = quantidade;
 	}
 	
+	public int getQuantidade() {
+		return quantidade;
+	}
+
+	public void setQuantidade(int quantidade) {
+		this.quantidade = quantidade;
+	}
+
 	public String getId() {
 		return id;
 	}
