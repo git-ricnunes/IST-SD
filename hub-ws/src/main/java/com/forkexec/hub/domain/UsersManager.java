@@ -4,9 +4,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.binas.domain.exception.InvalidEmailException;
-import org.binas.domain.exception.UserAlreadyExistsException;
-import org.binas.domain.exception.UserNotFoundException;
+import com.forkexec.hub.domain.exception.InvalidEmailException;
+import com.forkexec.hub.domain.exception.InvalidPasswordException;
+import com.forkexec.hub.domain.exception.UserAlreadyExistsException;
+import com.forkexec.hub.domain.exception.UserNotFoundException;
+
+
 /**
  * Class that manages the Registration and maintenance of Users
  *
@@ -53,9 +56,13 @@ public class UsersManager {
 		return user;
 	}
 	
-	public synchronized User RegisterNewUser(String email) throws UserAlreadyExistsException, InvalidEmailException {
+	public synchronized User RegisterNewUser(String email,String pwd) throws UserAlreadyExistsException, InvalidEmailException, InvalidPasswordException {
 		if(email == null || email.trim().length() == 0 || !email.matches("\\w+(\\.?\\w)*@\\w+(\\.?\\w)*")) {
 			throw new InvalidEmailException();
+		}
+		
+		if(pwd == null || pwd.trim().length() == 0) {
+			throw new InvalidPasswordException();
 		}
 		
 		try {
@@ -63,7 +70,7 @@ public class UsersManager {
 			throw new UserAlreadyExistsException();
 			
 		} catch (UserNotFoundException e) {
-			User user = new User(email,initialBalance.get());
+			User user = new User(email,pwd,initialBalance.get());
 			registeredUsers.put(email, user);
 			return user;
 		}
@@ -71,7 +78,7 @@ public class UsersManager {
 	
 	public synchronized void reset() {
 		registeredUsers.clear();
-		initialBalance.set(DEFAULT_INITIAL_BALANCE);
+		initialBalance.set(DEFAULT_INITIAL_POINTS);
 	}
 	
 	public synchronized void init(int newBalance) {

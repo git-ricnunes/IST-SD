@@ -27,7 +27,7 @@ public class User {
 		AtomicInteger newPoints= points;
 		newPoints.set(newPoints.get()-pointsToTake); 
 	
-		if(newPoints.get() > 0) {
+		if(newPoints.get() >= 0) {
 			 points.set(newPoints.get()); 
 		 } else {
 			 throw new InsufficientCreditsException();
@@ -35,43 +35,52 @@ public class User {
 	}
 
 	
-	public synchronized void incrementBalance(int amount){
-		 balance.getAndAdd(amount);
-	}
-	
-	public String getEmail() {
-		return email;
-	}
-	
-	public boolean getHasBina() {
-		return hasBina.get();
+	public synchronized void incrementPoints(int pointsToGive){
+		 points.getAndAdd(pointsToGive);
 	}
 	
 
 	public int getCredit() {
-		return balance.get();
+		return points.get();
 	}
 
-	public synchronized void validateCanRentBina() throws InsufficientCreditsException{
+
+		
+	public synchronized void validateCanOrder() throws InsufficientCreditsException{
 		if(getCredit() <= 0) {
 			throw new InsufficientCreditsException();
 		}
 		
 	}
 
-	public synchronized void effectiveRent() throws InsufficientCreditsException {
-		decrementBalance();
-		hasBina.set(true);
+	public synchronized void effectiveRent(int pointsToTake) throws InsufficientCreditsException {
+		decrementPoints(pointsToTake);
 	}
 
-	public synchronized void effectiveReturn(int prize) throws UserHasNoBinaException {
-		if( ! getHasBina()) {
-			throw new UserHasNoBinaException();
-		}
-		hasBina.set(false);
-		incrementBalance(prize);
+
+	public String getPassword() {
+		return password;
 	}
 
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public AtomicInteger getPoints() {
+		return points;
+	}
+
+	public void setPoints(AtomicInteger points) {
+		this.points = points;
+	}
+	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
 	
 }

@@ -49,11 +49,7 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		  <dependency>
-        <groupId>com.forkexec.A65</groupId>
-        <artifactId>rst-ws-cli</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-    </dependency>
+
 	</dependencies>
 	<build>
 		<resources>
