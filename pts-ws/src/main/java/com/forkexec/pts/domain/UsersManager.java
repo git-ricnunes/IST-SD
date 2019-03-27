@@ -1,12 +1,11 @@
-package com.forkexec.hub.domain;
+package com.forkexec.pts.domain;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.forkexec.hub.domain.exception.InvalidEmailException;
-import com.forkexec.hub.domain.exception.InvalidPasswordException;
-import com.forkexec.hub.domain.exception.UserAlreadyExistsException;
+import com.forkexec.hub.domain.exception.EmailAlreadyExistsException;
 import com.forkexec.hub.domain.exception.UserNotFoundException;
 
 
@@ -55,22 +54,25 @@ public class UsersManager {
 		}
 		return user;
 	}
-	
-	public synchronized User RegisterNewUser(String email,String pwd) throws UserAlreadyExistsException, InvalidEmailException, InvalidPasswordException {
-		if(email == null || email.trim().length() == 0 || !email.matches("\\w+(\\.?\\w)*@\\w+(\\.?\\w)*")) {
-			throw new InvalidEmailException();
+	public void  addPoints(String email,int pointsToAdd) throws UserNotFoundException{
+		User user = registeredUsers.get(email);
+		if(user == null) {
+			throw new UserNotFoundException();
 		}
-		
-		if(pwd == null || pwd.trim().length() == 0) {
-			throw new InvalidPasswordException();
+		user.incrementPoints(pointsToAdd);
+	}
+	
+	public synchronized User RegisterNewUser(String email) throws EmailAlreadyExistsException, InvalidEmailException {
+		if(email == null || email.trim().length() == 0 || !email.matches("\\w+(\\.?\\w)*")) {
+			throw new InvalidEmailException();
 		}
 		
 		try {
 			getUser(email);
-			throw new UserAlreadyExistsException();
+			throw new EmailAlreadyExistsException();
 			
 		} catch (UserNotFoundException e) {
-			User user = new User(email,pwd,initialBalance.get());
+			User user = new User(email,initialBalance.get());
 			registeredUsers.put(email, user);
 			return user;
 		}

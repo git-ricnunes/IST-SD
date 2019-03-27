@@ -38,8 +38,7 @@ public class HubPortImpl implements HubPortType {
 	
 	@Override
 	public void activateAccount(String userId) throws InvalidUserIdFault_Exception {
-		// TODO Auto-generated method stub
-		
+	//TODO
 	}
 
 	@Override
@@ -179,15 +178,15 @@ public class HubPortImpl implements HubPortType {
 	// View helpers ----------------------------------------------------------
 
 	// /** Helper to convert a domain object to a view. */
-	// private ParkInfo buildParkInfo(Park park) {
-		// ParkInfo info = new ParkInfo();
-		// info.setId(park.getId());
-		// info.setCoords(buildCoordinatesView(park.getCoordinates()));
-		// info.setCapacity(park.getMaxCapacity());
-		// info.setFreeSpaces(park.getFreeDocks());
-		// info.setAvailableCars(park.getAvailableCars());
-		// return info;
-	// }
+//	 private ParkInfo buildUserInfo(Park park) {
+//		 ParkInfo info = new ParkInfo();
+//		 info.setId(park.getId());
+//		 info.setCoords(buildCoordinatesView(park.getCoordinates()));
+//		 info.setCapacity(park.getMaxCapacity());
+//		 info.setFreeSpaces(park.getFreeDocks());
+//		 info.setAvailableCars(park.getAvailableCars());
+//		 return info;
+//	 }
 
 	
 	// Exception helpers -----------------------------------------------------

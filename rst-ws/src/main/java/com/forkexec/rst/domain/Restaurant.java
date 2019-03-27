@@ -45,9 +45,6 @@ public class Restaurant {
 	public static synchronized Restaurant getInstance() {
 		return SingletonHolder.INSTANCE;
 	}
-
-
-	// TODO 
 	
 	public synchronized void init(Collection<Food> menus) throws BadInitFault_Exception {
  		if(menus.isEmpty())

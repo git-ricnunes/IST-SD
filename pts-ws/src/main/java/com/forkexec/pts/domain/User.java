@@ -1,9 +1,8 @@
-package com.forkexec.hub.domain;
+package com.forkexec.pts.domain;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.forkexec.hub.domain.exception.InsufficientCreditsException;;
+import com.forkexec.hub.domain.exception.InsufficientCreditsException;
 
 /**
  * 
@@ -14,13 +13,13 @@ import com.forkexec.hub.domain.exception.InsufficientCreditsException;;
 public class User {
 
 	private String email;
-	private String password;
 	private AtomicInteger points;
+	private boolean active;
 	
-	public User(String email,String password, int initialPoints) {
+	public User(String email, int initialPoints) {
 		this.email = email;
-		this.password=password;
 		this.points = new AtomicInteger(initialPoints);
+		this.active= true;
 	}
 	
 	public synchronized void decrementPoints(int pointsToTake) throws InsufficientCreditsException{
@@ -57,15 +56,6 @@ public class User {
 		decrementPoints(pointsToTake);
 	}
 
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
 	public AtomicInteger getPoints() {
 		return points;
 	}
@@ -80,6 +70,14 @@ public class User {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public boolean isStatus() {
+		return active;
+	}
+
+	public void setStatus(boolean active) {
+		this.active = active;
 	}
 
 	

@@ -1,5 +1,10 @@
 package com.forkexec.hub.domain;
 
+import java.util.Collection;
+
+import com.forkexec.rst.ws.BadInitFault_Exception;
+import com.forkexec.rst.ws.cli.RestaurantClient;
+
 
 /**
  * Hub
@@ -7,8 +12,9 @@ package com.forkexec.hub.domain;
  * A restaurants hub server.
  *
  */
-public class Hub {
 
+public class Hub {
+	
 
 	// Singleton -------------------------------------------------------------
 
@@ -28,8 +34,5 @@ public class Hub {
 	public static synchronized Hub getInstance() {
 		return SingletonHolder.INSTANCE;
 	}
-
-
-	// TODO 
 	
 }

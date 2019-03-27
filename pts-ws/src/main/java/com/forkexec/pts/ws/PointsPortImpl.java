@@ -2,6 +2,12 @@ package com.forkexec.pts.ws;
 
 import javax.jws.WebService;
 
+import com.forkexec.hub.domain.exception.EmailAlreadyExistsException;
+import com.forkexec.hub.domain.exception.InsufficientCreditsException;
+import com.forkexec.hub.domain.exception.InvalidEmailException;
+import com.forkexec.hub.domain.exception.UserNotFoundException;
+import com.forkexec.pts.domain.UsersManager;
+
 /**
  * This class implements the Web Service port type (interface). The annotations
  * below "map" the Java class to the WSDL definitions.
@@ -24,27 +30,65 @@ public class PointsPortImpl implements PointsPortType {
 
     @Override
 	public void activateUser(final String userEmail) throws EmailAlreadyExistsFault_Exception, InvalidEmailFault_Exception {
-        //TODO
+    	try {
+    		
+			UsersManager.getInstance().RegisterNewUser(userEmail);
+			
+    	} catch (EmailAlreadyExistsException e) {
+			throwEmailExists("Email already exists: " + userEmail);
+		} catch (InvalidEmailException e) {
+			throwInvalidEmail("Invalid email: " + userEmail);
+		} 
     }
 
     @Override
     public int pointsBalance(final String userEmail) throws InvalidEmailFault_Exception {
-        //TODO
-      return -1;
+    	int userCredit = 0;
+		try {
+			userCredit = UsersManager.getInstance().getUser(userEmail).getCredit();
+		} catch (UserNotFoundException e) {
+			throwInvalidEmail("Email not found: " + userEmail);
+		}
+		
+      return userCredit;
     }
 
     @Override
     public int addPoints(final String userEmail, final int pointsToAdd)
 	    throws InvalidEmailFault_Exception, InvalidPointsFault_Exception {
-        //TODO
-        return -1;
+    	
+    	int userCredit =0;
+    	
+    	if(pointsToAdd <= 0 )
+    		throwInvalidPoints("Number of points are invalid: " + pointsToAdd);
+    	
+    	try {
+			UsersManager.getInstance().getUser(userEmail).incrementPoints(pointsToAdd);
+			userCredit = UsersManager.getInstance().getUser(userEmail).getCredit();
+
+		} catch (UserNotFoundException e) {
+			throwInvalidEmail("Email not found: " + userEmail);
+		}
+    	
+        return userCredit;
     }
 
     @Override
     public int spendPoints(final String userEmail, final int pointsToSpend)
 	    throws InvalidEmailFault_Exception, InvalidPointsFault_Exception, NotEnoughBalanceFault_Exception {
-        //TODO
-        return -1;
+    	int userCredit=0;
+    	
+    		try {
+				UsersManager.getInstance().getUser(userEmail).decrementPoints(pointsToSpend);
+				userCredit = UsersManager.getInstance().getUser(userEmail).getCredit();
+			} catch (InsufficientCreditsException e) {
+				throwNotEnoughBalance("Not enough points to spend.");
+				e.printStackTrace();
+			} catch (UserNotFoundException e) {
+				throwInvalidEmail("Email not found: " + userEmail);
+			}
+			
+        return userCredit;
     }
 
     // Control operations ----------------------------------------------------
@@ -68,15 +112,15 @@ public class PointsPortImpl implements PointsPortType {
 	return builder.toString();
     }
 
+	@Override
+	public void ctrlInit(int startPoints) throws BadInitFault_Exception {
+		// TODO Auto-generated method stub
+		
+	}
+	
     /** Return all variables to default values. */
     @Override
     public void ctrlClear() {
-        //TODO
-    }
-
-    /** Set variables with specific values. */
-    @Override
-    public void ctrlInit(final int startPoints) throws BadInitFault_Exception {
         //TODO
     }
 
@@ -88,4 +132,32 @@ public class PointsPortImpl implements PointsPortType {
         faultInfo.message = message;
         throw new BadInitFault_Exception(message, faultInfo);
     }
+
+	private void throwInvalidEmail(final String message) throws InvalidEmailFault_Exception {
+		InvalidEmailFault faultInfo = new InvalidEmailFault();
+		faultInfo.setMessage(message);
+		throw new InvalidEmailFault_Exception(message, faultInfo);
+	}
+	
+	private void throwEmailExists(final String message) throws EmailAlreadyExistsFault_Exception {
+		EmailAlreadyExistsFault faultInfo = new EmailAlreadyExistsFault();
+		faultInfo.setMessage(message);
+		throw new EmailAlreadyExistsFault_Exception(message, faultInfo);
+	}
+	
+	private void throwInvalidPoints(final String message) throws InvalidPointsFault_Exception {
+		InvalidPointsFault faultInfo = new InvalidPointsFault();
+		faultInfo.setMessage(message);
+		throw new InvalidPointsFault_Exception(message, faultInfo);
+	}
+	
+	
+	private void throwNotEnoughBalance(final String message) throws NotEnoughBalanceFault_Exception {
+		NotEnoughBalanceFault faultInfo = new NotEnoughBalanceFault();
+		faultInfo.setMessage(message);
+		throw new NotEnoughBalanceFault_Exception(message, faultInfo);
+	}
+
+
+
 }
