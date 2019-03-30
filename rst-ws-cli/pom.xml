@@ -3,8 +3,6 @@
 	<modelVersion>4.0.0</modelVersion>
 	<!-- http://maven.apache.org/pom.html#Quick_Overview -->
 
-	<!-- Please replace 'A65' below with your C (campus) with A (Alameda) / 
-		T (Tagus); and your group number with two digits. Then delete this comment. -->
 	<parent>
 		<groupId>com.forkexec.A65</groupId>
 		<artifactId>ForkExec</artifactId>

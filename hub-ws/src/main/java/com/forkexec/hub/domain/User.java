@@ -1,8 +1,8 @@
-package com.forkexec.pts.domain;
+package com.forkexec.hub.domain;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.forkexec.hub.domain.exception.InsufficientCreditsException;
+import com.forkexec.pts.domain.exception.InsufficientCreditsException;
 
 /**
  * 

@@ -44,9 +44,9 @@
 
 		<group.id>A65</group.id>
 		
-		<pts.ws.name>${group.id}_Points</pts.ws.name>
-		<rst.ws.name>${group.id}_Restaurant</rst.ws.name>
-		<hub.ws.name>${group.id}_Hub</hub.ws.name>
+		<pts.ws.name>${group.id}_pts</pts.ws.name>
+		<rst.ws.name>${group.id}_rst</rst.ws.name>
+		<hub.ws.name>${group.id}_hub</hub.ws.name>
 	</properties>
 
     <build>

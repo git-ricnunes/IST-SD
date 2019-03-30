@@ -1,5 +1,6 @@
 package com.forkexec.hub.ws;
 
+import com.forkexec.hub.domain.Hub;
 
 /**
  * The application is where the service starts running. The program arguments
@@ -30,6 +31,9 @@ public class HubApp {
 			wsName = args[1];
 			wsURL = args[2];
 			endpoint = new HubEndpointManager(uddiURL, wsName, wsURL);
+			
+			Hub.getInstance().initUddiURL(uddiURL);
+
 
 		}
 

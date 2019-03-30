@@ -2,11 +2,7 @@ package com.forkexec.pts.ws;
 
 import javax.jws.WebService;
 
-import com.forkexec.hub.domain.exception.EmailAlreadyExistsException;
-import com.forkexec.hub.domain.exception.InsufficientCreditsException;
-import com.forkexec.hub.domain.exception.InvalidEmailException;
-import com.forkexec.hub.domain.exception.UserNotFoundException;
-import com.forkexec.pts.domain.UsersManager;
+import com.forkexec.pts.domain.Points;
 
 /**
  * This class implements the Web Service port type (interface). The annotations
@@ -29,24 +25,24 @@ public class PointsPortImpl implements PointsPortType {
     // Main operations -------------------------------------------------------
 
     @Override
-	public void activateUser(final String userEmail) throws EmailAlreadyExistsFault_Exception, InvalidEmailFault_Exception {
-    	try {
-    		
-			UsersManager.getInstance().RegisterNewUser(userEmail);
-			
-    	} catch (EmailAlreadyExistsException e) {
-			throwEmailExists("Email already exists: " + userEmail);
-		} catch (InvalidEmailException e) {
-			throwInvalidEmail("Invalid email: " + userEmail);
-		} 
+	public void activateUser(final String userEmail) throws InvalidEmailFault_Exception, EmailAlreadyExistsFault_Exception   {
+    	
+    	try{
+    	Points.getInstance().createUser(userEmail); 
+    	
+    	} catch (InvalidEmailFault_Exception e) {
+    		throwInvalidEmail("Email not found: " + userEmail);
+    	} catch (EmailAlreadyExistsFault_Exception e) {
+    		throwEmailExists("Email already exists: " + userEmail);
+    	}
     }
 
     @Override
     public int pointsBalance(final String userEmail) throws InvalidEmailFault_Exception {
     	int userCredit = 0;
 		try {
-			userCredit = UsersManager.getInstance().getUser(userEmail).getCredit();
-		} catch (UserNotFoundException e) {
+			userCredit = Points.getInstance().getCredit(userEmail);
+		} catch (InvalidEmailFault_Exception e) {
 			throwInvalidEmail("Email not found: " + userEmail);
 		}
 		
@@ -63,10 +59,8 @@ public class PointsPortImpl implements PointsPortType {
     		throwInvalidPoints("Number of points are invalid: " + pointsToAdd);
     	
     	try {
-			UsersManager.getInstance().getUser(userEmail).incrementPoints(pointsToAdd);
-			userCredit = UsersManager.getInstance().getUser(userEmail).getCredit();
-
-		} catch (UserNotFoundException e) {
+    		userCredit=Points.getInstance().addCredit(userEmail,pointsToAdd);
+		} catch (InvalidEmailFault_Exception e) {
 			throwInvalidEmail("Email not found: " + userEmail);
 		}
     	
@@ -78,17 +72,19 @@ public class PointsPortImpl implements PointsPortType {
 	    throws InvalidEmailFault_Exception, InvalidPointsFault_Exception, NotEnoughBalanceFault_Exception {
     	int userCredit=0;
     	
-    		try {
-				UsersManager.getInstance().getUser(userEmail).decrementPoints(pointsToSpend);
-				userCredit = UsersManager.getInstance().getUser(userEmail).getCredit();
-			} catch (InsufficientCreditsException e) {
-				throwNotEnoughBalance("Not enough points to spend.");
-				e.printStackTrace();
-			} catch (UserNotFoundException e) {
-				throwInvalidEmail("Email not found: " + userEmail);
-			}
-			
+    	if(pointsToSpend <= 0 )
+    		throwInvalidPoints("Number of points are invalid: " + pointsToSpend);
+    	
+    	try {
+    		userCredit=Points.getInstance().subtractCredit(userEmail,pointsToSpend);
+		} catch (InvalidEmailFault_Exception e) {
+			throwInvalidEmail("Email not found: " + userEmail);
+		} catch (NotEnoughBalanceFault_Exception e){
+			throwNotEnoughBalance("Not enough credits: " + userEmail);
+		}
+    	
         return userCredit;
+			
     }
 
     // Control operations ----------------------------------------------------
@@ -157,7 +153,5 @@ public class PointsPortImpl implements PointsPortType {
 		faultInfo.setMessage(message);
 		throw new NotEnoughBalanceFault_Exception(message, faultInfo);
 	}
-
-
 
 }

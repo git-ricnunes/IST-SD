@@ -48,6 +48,11 @@
 	        <artifactId>rst-ws-cli</artifactId>
 	        <version>1.0.0-SNAPSHOT</version>
    		 </dependency>
+   		  <dependency>
+	        <groupId>com.forkexec.A65</groupId>
+	        <artifactId>pts-ws-cli</artifactId>
+	        <version>1.0.0-SNAPSHOT</version>
+   		 </dependency>
 	</dependencies>
 
 	<build>

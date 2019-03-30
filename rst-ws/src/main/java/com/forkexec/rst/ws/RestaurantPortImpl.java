@@ -67,7 +67,7 @@ public class RestaurantPortImpl implements RestaurantPortType {
 		if(arg0.getId().isEmpty() || "".equals(arg0.getId()))
 			throwBadMenuIdFault("Invalid MenuID !");
 		else if (arg1<1)
-			throwBadQuantityFault("Quantity must be greater then zero!");
+			throwBadQuantityFault("Quantity must be greater than zero!");
 		else if (quantidade<arg1)
 			throwInsufficientQuantityFault("Not enough menus to serve!");
 		else {

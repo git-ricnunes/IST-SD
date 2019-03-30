@@ -1,4 +1,4 @@
-package com.forkexec.hub.domain.exception;
+package com.forkexec.pts.domain.exception;
 
 
 public class InsufficientCreditsException extends Exception {

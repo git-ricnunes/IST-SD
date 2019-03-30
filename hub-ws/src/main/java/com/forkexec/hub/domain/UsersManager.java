@@ -1,12 +1,12 @@
-package com.forkexec.pts.domain;
+package com.forkexec.hub.domain;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.forkexec.hub.domain.exception.InvalidEmailException;
-import com.forkexec.hub.domain.exception.EmailAlreadyExistsException;
-import com.forkexec.hub.domain.exception.UserNotFoundException;
+import com.forkexec.pts.domain.exception.InvalidEmailException;
+import com.forkexec.pts.domain.exception.EmailAlreadyExistsException;
+import com.forkexec.pts.domain.exception.UserNotFoundException;
 
 
 /**
@@ -63,7 +63,7 @@ public class UsersManager {
 	}
 	
 	public synchronized User RegisterNewUser(String email) throws EmailAlreadyExistsException, InvalidEmailException {
-		if(email == null || email.trim().length() == 0 || !email.matches("\\w+(\\.?\\w)*")) {
+		if(email == null || email.trim().length() == 0 || !email.matches("\\w+(\\.?\\w)*@\\w+(\\.?\\w)*")) {
 			throw new InvalidEmailException();
 		}
 		
