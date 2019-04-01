@@ -1,8 +1,7 @@
 package com.forkexec.hub.domain;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import com.forkexec.pts.domain.exception.InsufficientCreditsException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
@@ -13,57 +12,29 @@ import com.forkexec.pts.domain.exception.InsufficientCreditsException;
 public class User {
 
 	private String email;
-	private AtomicInteger points;
-	private boolean active;
+	private List<CartItem> cart;
 	
-	public User(String email, int initialPoints) {
+	public User(String email) {
 		this.email = email;
-		this.points = new AtomicInteger(initialPoints);
-		this.active= true;
+		this.cart = new ArrayList<CartItem>();
 	}
 	
-	public synchronized void decrementPoints(int pointsToTake) throws InsufficientCreditsException{
-		AtomicInteger newPoints= points;
-		newPoints.set(newPoints.get()-pointsToTake); 
-	
-		if(newPoints.get() >= 0) {
-			 points.set(newPoints.get()); 
-		 } else {
-			 throw new InsufficientCreditsException();
-		 }
-	}
-
-	
-	public synchronized void incrementPoints(int pointsToGive){
-		 points.getAndAdd(pointsToGive);
-	}
-	
-
-	public int getCredit() {
-		return points.get();
-	}
-
-
+	public User getUserByEmail(String email){
 		
-	public synchronized void validateCanOrder() throws InsufficientCreditsException{
-		if(getCredit() <= 0) {
-			throw new InsufficientCreditsException();
-		}
 		
-	}
-
-	public synchronized void effectiveRent(int pointsToTake) throws InsufficientCreditsException {
-		decrementPoints(pointsToTake);
-	}
-
-	public AtomicInteger getPoints() {
-		return points;
-	}
-
-	public void setPoints(AtomicInteger points) {
-		this.points = points;
+		
+		return this;
 	}
 	
+	
+	public List<CartItem> getCart() {
+		return cart;
+	}
+
+	public void setCart(List<CartItem> cart) {
+		this.cart = cart;
+	}
+
 	public String getEmail() {
 		return email;
 	}
@@ -72,13 +43,6 @@ public class User {
 		this.email = email;
 	}
 
-	public boolean isStatus() {
-		return active;
-	}
-
-	public void setStatus(boolean active) {
-		this.active = active;
-	}
 
 	
 }

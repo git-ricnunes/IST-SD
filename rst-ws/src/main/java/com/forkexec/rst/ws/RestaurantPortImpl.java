@@ -51,7 +51,9 @@ public class RestaurantPortImpl implements RestaurantPortType {
 		synchronized (restMenus) {
 		
 			for(Food menu : restMenus)
-				if(menu.getEntrada().contains(descriptionText))
+				if(	menu.getEntrada().contains(descriptionText) ||
+					menu.getPrincipal().contains(descriptionText)||
+					menu.getSobremesa().contains(descriptionText) )
 					retMenus.add(buildMenu(menu));		
 		}
 		return retMenus;
@@ -74,7 +76,7 @@ public class RestaurantPortImpl implements RestaurantPortType {
 			String actualOderId = Restaurant.getInstance().getOrderId();		
 			
 			int newOrderId = Integer.parseInt(actualOderId)+1;
-			
+			restMenu.setQuantidade(restMenu.getQuantidade()-arg1);
 			retMenuOrder= builOrder(arg0,String.valueOf(newOrderId),arg1);
 		}
 		return retMenuOrder;

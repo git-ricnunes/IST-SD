@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.forkexec.hub.ws.InvalidCreditCardFault_Exception;
+import com.forkexec.hub.ws.InvalidMoneyFault_Exception;
 import com.forkexec.hub.ws.InvalidUserIdFault_Exception;
 
 /**
@@ -61,6 +63,16 @@ public class ActivateAccountsIT extends BaseIT {
 	public void creditsInvalidUserTest() throws InvalidUserIdFault_Exception {
 		  String email = "";
 		  assertEquals(client.accountBalance(email), 100);
+			
+	}
+	
+	@Test
+	public void ccDevTest() throws InvalidUserIdFault_Exception,InvalidCreditCardFault_Exception,InvalidMoneyFault_Exception {
+		  String email = "new@ist.pt";
+			
+		  client.loadAccount(email, 10, "4024007102923926");
+		  assertEquals(client.accountBalance(email), 1100);
+
 			
 	}
 
