@@ -46,19 +46,8 @@ To compile:
 mvn compile
 ```
 
-To run using exec plugin:
+To test:
 
 ```
-mvn exec:java
+mvn verify
 ```
-
-## To configure the Maven project in Eclipse
-
-'File', 'Import...', 'Maven'-'Existing Maven Projects'
-
-'Select root directory' and 'Browse' to the project base folder.
-
-Check that the desired POM is selected and 'Finish'.
-
-
-----

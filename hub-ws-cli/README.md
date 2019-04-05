@@ -39,25 +39,14 @@ To generate stubs using wsimport:
 mvn generate-sources
 ```
 
-To compile:
+To compile and run the server:
 
 ```
-mvn compile
+mvn compile exec:java
 ```
 
-To run using exec plugin:
+To test this specific module
 
 ```
-mvn exec:java
-```
+mvn verify
 
-## To configure the Maven project in Eclipse
-
-'File', 'Import...', 'Maven'-'Existing Maven Projects'
-
-'Select root directory' and 'Browse' to the project base folder.
-
-Check that the desired POM is selected and 'Finish'.
-
-
-----

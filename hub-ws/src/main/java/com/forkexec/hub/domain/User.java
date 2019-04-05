@@ -12,11 +12,11 @@ import java.util.List;
 public class User {
 
 	private String email;
-	private List<CartItem> cart;
+	private List<FoodHub> cart;
 	
 	public User(String email) {
 		this.email = email;
-		this.cart = new ArrayList<CartItem>();
+		this.cart = new ArrayList<FoodHub>();
 	}
 	
 	public User getUserByEmail(String email){
@@ -27,11 +27,11 @@ public class User {
 	}
 	
 	
-	public List<CartItem> getCart() {
+	public List<FoodHub> getCart() {
 		return cart;
 	}
 
-	public void setCart(List<CartItem> cart) {
+	public void setCart(List<FoodHub> cart) {
 		this.cart = cart;
 	}
 

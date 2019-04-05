@@ -2,7 +2,8 @@ package com.forkexec.hub.domain;
 
 public class FoodHub {
 	
-	String id;
+	String restauranteid;
+	String menuid;
 	String entrada;
 	String principal;
 	String sobremesa;
@@ -14,9 +15,10 @@ public class FoodHub {
 		super();
 	}
 	
-	public FoodHub(String id, String entrada, String principal, String sobremesa,int preco, int tempoDeConfecao,int quantidade) {
+	public FoodHub(String restauranteid, String menuid ,String entrada, String principal, String sobremesa,int preco, int tempoDeConfecao,int quantidade) {
 		super();
-		this.id = id;
+		this.restauranteid = restauranteid;
+		this.menuid = menuid;
 		this.entrada = entrada;
 		this.principal = principal;
 		this.sobremesa = sobremesa;
@@ -32,15 +34,23 @@ public class FoodHub {
 	public void setQuantidade(int quantidade) {
 		this.quantidade = quantidade;
 	}
+	
+	public String getRestauranteid() {
+		return restauranteid;
+	}
 
-	public String getId() {
-		return id;
+	public void setRestauranteid(String restauranteid) {
+		this.restauranteid = restauranteid;
 	}
-	
-	public void setId(String id) {
-		this.id = id;
+
+	public String getMenuid() {
+		return menuid;
 	}
-	
+
+	public void setMenuid(String menuid) {
+		this.menuid = menuid;
+	}
+
 	public String getEntrada() {
 		return entrada;
 	}
@@ -83,9 +93,12 @@ public class FoodHub {
 
 	@Override
 	public String toString() {
-		return "Menu [id=" + id + ", entrada=" + entrada + ", principal=" + principal + ", sobremesa=" + sobremesa
-				+ ", tempoDeConfecao=" + tempoDeConfecao + "]";
+		return "FoodHub [restauranteid=" + restauranteid + ", menuid=" + menuid + ", entrada=" + entrada
+				+ ", principal=" + principal + ", sobremesa=" + sobremesa + ", preco=" + preco + ", tempoDeConfecao="
+				+ tempoDeConfecao + ", quantidade=" + quantidade + "]";
 	}
+
+
 	
 
 }

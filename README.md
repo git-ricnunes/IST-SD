@@ -8,19 +8,11 @@ Distributed Systems 2018-2019, 2nd semester project
 
 Group A65
 
-Ricardo Nunes 71015 git-ricnunes
+Ricardo Nunes 71015 git-ricnunes Leade Developer
+Ricardo Nunes 71015 git-ricnunes Tester
 
 For each module, the README file must identify the lead developer and the contributors.
 The leads should be evenly divided among the group members.
-
-
-### Code identification
-
-In all the source files (including POMs), please replace __CXX__ with your Campus: A (Alameda) or T (Tagus); and your group number with two digits.
-
-This is important for code dependency management 
-i.e. making sure that your code runs using the correct components and not someone else's.
-
 
 ## Getting Started
 
@@ -56,17 +48,10 @@ mvn clean install -DskipTests
 
 The tests are skipped because they require each server to be running.
 
+### Testing
 
-## Built With
+First before testing all the modules make sure that all the serveres are connected.
 
-* [Maven](https://maven.apache.org/) - Build Tool and Dependency Management
-* [JAX-WS](https://javaee.github.io/metro-jax-ws/) - SOAP Web Services implementation for Java
-
-
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. 
-
+mvn verify
 
 

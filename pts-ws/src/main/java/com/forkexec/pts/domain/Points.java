@@ -49,7 +49,15 @@ public class Points {
         return SingletonHolder.INSTANCE;
     }
     
-	public void createUser(String email) throws  InvalidEmailFault_Exception,EmailAlreadyExistsFault_Exception {
+    public void init(int initPoints){
+    	this.initialBalance.set(initPoints);
+    }
+    
+    public void clear(){
+    	this.userPoints.clear();
+    }
+    
+	public synchronized void createUser(String email) throws  InvalidEmailFault_Exception,EmailAlreadyExistsFault_Exception {
 		
 		if(email==null||email.equals(""))
 			throw new InvalidEmailFault_Exception("Invalid email!",null);
@@ -60,49 +68,69 @@ public class Points {
 			userPoints.put(email, initialBalance);
 	}
 	
-	public int addCredit(String email,int points) throws  InvalidEmailFault_Exception, InvalidPointsFault_Exception  {
+	public synchronized int addCredit(String email,int points) throws  InvalidEmailFault_Exception, InvalidPointsFault_Exception  {
 		
-		if(email==null||email.equals(""))
+
+		if(email==null||email.equals("")||userPoints.get(email)==null)
 			throw new InvalidEmailFault_Exception("Invalid email!",null);
-		
+
+		System.out.println("#####addCredit######"+userPoints+"######addCredit#####");
+
 		if( points <=0)
-			throw new InvalidPointsFault_Exception("Points added must be higher than 0",null);
-		
-			userPoints.get(email).getAndAdd(points);
-	
+			throw new InvalidPointsFault_Exception("Points added must be higher than 0.",null);
+				
+			AtomicInteger newBalance = new AtomicInteger();
+			newBalance.addAndGet(userPoints.get(email).get()+points);
+			
+			userPoints.put(email,newBalance);
+			System.out.println("#####addCredit2######"+userPoints+"######addCredit2#####");
+
 		return userPoints.get(email).get();
 
 	}
 
-	public int subtractCredit(String email,int points) throws  InvalidEmailFault_Exception, InvalidPointsFault_Exception,
+	public synchronized int subtractCredit(String email,int points) throws  InvalidEmailFault_Exception, InvalidPointsFault_Exception,
 	NotEnoughBalanceFault_Exception  {
 		
-		if(email==null||email.equals(""))
+		if(email==null||email.equals("")||userPoints.get(email)==null)
 			throw new InvalidEmailFault_Exception("Invalid email!",null);
 		
 		if( points <=0)
 			throw new InvalidPointsFault_Exception("Points subtract must be higher than 0",null);
 		
-		userPoints.get(email).getAndAdd(points * -1);
+		System.out.println("#####subtractCredit######"+userPoints+"######subtractCredit#####");
+		
+		
+		AtomicInteger newBalance = new AtomicInteger();
+		newBalance.addAndGet(userPoints.get(email).get()+(points * -1));
+		
+		userPoints.put(email,newBalance);
 
 		if (userPoints.get(email).get() < 0){
-			userPoints.get(email).getAndAdd(points);
+			
+			AtomicInteger oldBalance = new AtomicInteger();
+			oldBalance.addAndGet(userPoints.get(email).get()+points);
+			
+			userPoints.put(email,oldBalance);
 			throw  new NotEnoughBalanceFault_Exception("Not enough credit!",null);
 		}
-		
+		System.out.println("#####subtractCredit2######"+userPoints+"######subtractCredit2#####");
+
 		return userPoints.get(email).get() ;
 		
 	}
 
-	public int getCredit(String email) throws  InvalidEmailFault_Exception {
+	public synchronized int getCredit(String email) throws  InvalidEmailFault_Exception {
 		
 		int returnPoints=0;
 		
-		if(email==null||email.equals(""))
+		if(email==null||email.equals("")||userPoints.get(email)==null)
 			throw new InvalidEmailFault_Exception("Invalid email!",null);
 				
-		System.out.println(email+userPoints.get(email));
+		System.out.println("#####getCredit######"+userPoints+"######getCredit#####");
 			returnPoints = userPoints.get(email).get();
+		System.out.println("#####getCredit2######"+userPoints+"######getCredit2#####");
+
 			return  returnPoints;
 			
 	}

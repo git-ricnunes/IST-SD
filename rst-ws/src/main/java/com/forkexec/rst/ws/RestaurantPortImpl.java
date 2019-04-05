@@ -1,7 +1,10 @@
 package com.forkexec.rst.ws;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.jws.WebService;
@@ -37,53 +40,73 @@ public class RestaurantPortImpl implements RestaurantPortType {
 	@Override
 	public Menu getMenu(MenuId menuId) throws BadMenuIdFault_Exception {
 		
-		Food restMenu = Restaurant.getInstance().getMenu(menuId);
+		Food  restMenu = null;
+
+		try{
+			 restMenu = Restaurant.getInstance().getMenu(menuId);
+		}catch(BadMenuIdFault_Exception e){
+			throwBadMenuIdFault("Bad MenuID!");
+		}
 		
+
 		return buildMenu(restMenu);
 	}
 	
 	@Override
 	public List<Menu> searchMenus(String descriptionText) throws BadTextFault_Exception {
 		
-		List<Menu> retMenus = null;
-		Collection<Food> restMenus = Restaurant.getInstance().getMenus();
-
-		synchronized (restMenus) {
 		
-			for(Food menu : restMenus)
+		if(descriptionText==null||descriptionText.equals(""))
+			throwBadTextFault("Invalid description to search");
+
+		List<Menu> retMenus = new ArrayList<Menu>();
+		Collection<Food> restMenus = Restaurant.getInstance().getMenus();
+		synchronized (restMenus) {
+			
+			for(Food menu : restMenus){
 				if(	menu.getEntrada().contains(descriptionText) ||
 					menu.getPrincipal().contains(descriptionText)||
 					menu.getSobremesa().contains(descriptionText) )
 					retMenus.add(buildMenu(menu));		
-		}
+				System.out.println(menu);
+				}
+			}
 		return retMenus;
 	}
 
 	@Override
 	public MenuOrder orderMenu(MenuId arg0, int arg1) throws BadMenuIdFault_Exception, BadQuantityFault_Exception, InsufficientQuantityFault_Exception {
 		
-		Food restMenu = Restaurant.getInstance().getMenu(arg0);
-		int quantidade = restMenu.getQuantidade();
+		Food restMenu = null;
 		MenuOrder retMenuOrder = new MenuOrder();
-		
-		if(arg0.getId().isEmpty() || "".equals(arg0.getId()))
-			throwBadMenuIdFault("Invalid MenuID !");
-		else if (arg1<1)
-			throwBadQuantityFault("Quantity must be greater than zero!");
-		else if (quantidade<arg1)
-			throwInsufficientQuantityFault("Not enough menus to serve!");
-		else {
-			String actualOderId = Restaurant.getInstance().getOrderId();		
+		Integer quantidade =null ;
+
+			if(arg0.getId().isEmpty() || "".equals(arg0.getId()))
+				throwBadMenuIdFault("Invalid MenuID !");
 			
-			int newOrderId = Integer.parseInt(actualOderId)+1;
-			restMenu.setQuantidade(restMenu.getQuantidade()-arg1);
-			retMenuOrder= builOrder(arg0,String.valueOf(newOrderId),arg1);
-		}
-		return retMenuOrder;
+			restMenu = Restaurant.getInstance().getMenu(arg0);
+			quantidade = restMenu.getQuantidade();
 
+			if (arg1<1)
+				throwBadQuantityFault("Quantity must be greater than zero!");
+			else if (quantidade == null || quantidade<arg1)
+				throwInsufficientQuantityFault("Not enough menus to serve!");
+			else {	
+				
+				DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+				Date date = new Date();
+				
+				//generates unique order ID with F(ork)E(xec)_<restid>_<order_timestamp>
+				
+				String actualOderId="FE_"+Restaurant.getInstance().getId()+"_"+dateFormat.format(date).toString();
+				
+				restMenu.setQuantidade(restMenu.getQuantidade()-arg1);
+				retMenuOrder= builOrder(arg0,actualOderId,arg1);
+				
+			}
+			
+			return retMenuOrder;
 		}
-
-	
 
 	// Control operations ----------------------------------------------------
 
@@ -109,18 +132,20 @@ public class RestaurantPortImpl implements RestaurantPortType {
 	/** Return all variables to default values. */
 	@Override
 	public void ctrlClear() {
-			Restaurant.getInstance().reset();
+		Restaurant.getInstance().reset();
 	}
 
 	/** Set variables with specific values. */
 	@Override
 	public void ctrlInit(List<MenuInit> initialMenus) throws BadInitFault_Exception {
 		try {
-			
-			Collection<Food> menus = new ArrayList<Food>();;
-			
+						
+			Collection<Food> menus = new ArrayList<Food>();
+
 			for (MenuInit initialMenu :initialMenus) {
+				
 				Food menu=new Food();
+				menu.setId(initialMenu.getMenu().getId().getId());
 				menu.setEntrada(initialMenu.getMenu().getEntree());
 				menu.setPrincipal(initialMenu.getMenu().getPlate());
 				menu.setSobremesa(initialMenu.getMenu().getDessert());
@@ -129,7 +154,8 @@ public class RestaurantPortImpl implements RestaurantPortType {
 				menu.setQuantidade(initialMenu.getQuantity());
 				menus.add(menu);
 			}
-			Restaurant.getInstance().init(menus);
+
+			Restaurant.getInstance().init(menus,this.endpointManager.getWsName());
 		
 		} catch (BadInitFault_Exception e) {
 			throwBadInit("Invalid initialization values!");
@@ -140,6 +166,7 @@ public class RestaurantPortImpl implements RestaurantPortType {
 
 	 /** Helper to convert a domain object to a view. */
 	 private Menu buildMenu (Food menu) {
+		 
 		 Menu retMenu = new Menu();
 		 MenuId menuid = new MenuId();
 		 menuid.setId(menu.getId());
@@ -169,6 +196,12 @@ public class RestaurantPortImpl implements RestaurantPortType {
 		BadInitFault faultInfo = new BadInitFault();
 		faultInfo.message = message;
 		throw new BadInitFault_Exception(message, faultInfo);
+	}
+	
+	private void throwBadTextFault(final String message) throws BadTextFault_Exception {
+		BadTextFault faultInfo = new BadTextFault();
+		faultInfo.message = message;
+		throw new BadTextFault_Exception(message, faultInfo);
 	}
 	
 	private void throwBadMenuIdFault(final String message) throws BadMenuIdFault_Exception {

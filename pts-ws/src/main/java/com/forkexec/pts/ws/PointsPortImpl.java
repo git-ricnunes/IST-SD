@@ -110,14 +110,17 @@ public class PointsPortImpl implements PointsPortType {
 
 	@Override
 	public void ctrlInit(int startPoints) throws BadInitFault_Exception {
-		// TODO Auto-generated method stub
+
+		if(startPoints<=0)
+			throwBadInit("Invalid points to init");
 		
+		Points.getInstance().init(startPoints);		
 	}
 	
     /** Return all variables to default values. */
     @Override
     public void ctrlClear() {
-        //TODO
+        Points.getInstance().clear();    
     }
 
     // Exception helpers -----------------------------------------------------

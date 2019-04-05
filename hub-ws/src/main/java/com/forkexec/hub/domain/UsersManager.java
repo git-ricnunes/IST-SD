@@ -54,13 +54,6 @@ public class UsersManager {
 		}
 		return user;
 	}
-	public void  addPoints(String email,int pointsToAdd) throws UserNotFoundException{
-		User user = registeredUsers.get(email);
-		if(user == null) {
-			throw new UserNotFoundException();
-		}
-		user.incrementPoints(pointsToAdd);
-	}
 	
 	public synchronized User RegisterNewUser(String email) throws EmailAlreadyExistsException, InvalidEmailException {
 		if(email == null || email.trim().length() == 0 || !email.matches("\\w+(\\.?\\w)*@\\w+(\\.?\\w)*")) {
@@ -72,7 +65,7 @@ public class UsersManager {
 			throw new EmailAlreadyExistsException();
 			
 		} catch (UserNotFoundException e) {
-			User user = new User(email,initialBalance.get());
+			User user = new User(email);
 			registeredUsers.put(email, user);
 			return user;
 		}

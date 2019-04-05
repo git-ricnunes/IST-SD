@@ -138,4 +138,5 @@ public class RestaurantClient implements RestaurantPortType {
 	public void ctrlInit(List<MenuInit> initialMenus) throws BadInitFault_Exception {
 		port.ctrlInit(initialMenus);
 	}
+	
 }

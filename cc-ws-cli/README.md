@@ -1,8 +1,10 @@
-# Restaurant Web Service client
+# Hub Web Service client
 
 ## Authors
 
 Group A65
+
+### Lead developer 
 
 Ricardo Nunes 71015 git-ricnunes
 
@@ -37,14 +39,3 @@ To generate stubs using wsimport:
 mvn generate-sources
 ```
 
-To compile:
-
-```
-mvn compile
-```
-
-To run the test
-
-```
-mvn verify
-```
