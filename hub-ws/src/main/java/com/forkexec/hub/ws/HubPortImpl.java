@@ -378,12 +378,12 @@ public class HubPortImpl implements HubPortType {
 			
 
 			for(String ptsurl: pointsUrls) {
-				try {
-					client = new PointsClient(ptsurl);
-				} catch (PointsClientException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+					try {
+						client = new PointsClient(ptsurl);
+					} catch (PointsClientException e) {
+						// IGNORE
+					}
+				
 			}
 
 				try {

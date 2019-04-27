@@ -37,17 +37,7 @@
       <xs:complexType name="ctrlClearResponse">
         <xs:sequence />
       </xs:complexType>
-      <xs:complexType name="addPoints">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="userEmail" type="xs:string" />
-          <xs:element name="pointsToAdd" type="xs:int" />
-        </xs:sequence>
-      </xs:complexType>
-      <xs:complexType name="addPointsResponse">
-        <xs:sequence>
-          <xs:element name="return" type="xs:int" />
-        </xs:sequence>
-      </xs:complexType>
+    
       <xs:complexType name="InvalidEmailFault">
         <xs:sequence>
           <xs:element minOccurs="0" name="message" type="xs:string" />
@@ -71,16 +61,7 @@
           <xs:element minOccurs="0" name="message" type="xs:string" />
         </xs:sequence>
       </xs:complexType>
-      <xs:complexType name="pointsBalance">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="userEmail" type="xs:string" />
-        </xs:sequence>
-      </xs:complexType>
-      <xs:complexType name="pointsBalanceResponse">
-        <xs:sequence>
-          <xs:element name="return" type="xs:int" />
-        </xs:sequence>
-      </xs:complexType>
+      
       <xs:complexType name="ctrlPing">
         <xs:sequence>
           <xs:element minOccurs="0" name="input" type="xs:string" />
@@ -104,22 +85,55 @@
           <xs:element minOccurs="0" name="message" type="xs:string" />
         </xs:sequence>
       </xs:complexType>
-      <xs:complexType name="spendPoints">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="userEmail" type="xs:string" />
-          <xs:element name="pointsToSpend" type="xs:int" />
-        </xs:sequence>
-      </xs:complexType>
-      <xs:complexType name="spendPointsResponse">
-        <xs:sequence>
-          <xs:element name="return" type="xs:int" />
-        </xs:sequence>
-      </xs:complexType>
       <xs:complexType name="NotEnoughBalanceFault">
         <xs:sequence>
           <xs:element minOccurs="0" name="message" type="xs:string" />
         </xs:sequence>
       </xs:complexType>
+	   <xs:complexType name="addPoints">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="userEmail" type="xs:string" />
+          <xs:element name="pointsToAdd" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="addPointsResponse">
+        <xs:sequence>
+          <xs:element name="return" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>	
+	  
+	    <!--  P2_SD Changes -->
+	  <xs:complexType name="CreditView">
+                <xs:sequence>
+                    <xs:element name="value" type="xs:int" />
+                    <xs:element name="tag" type="xs:int" />
+                </xs:sequence>
+		</xs:complexType>
+		<xs:complexType name="pointsBalance">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="userEmail" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="pointsBalanceResponse">
+        <xs:sequence>
+          <xs:element name="return" type="tns:CreditView" />
+        </xs:sequence>
+      </xs:complexType>
+	<xs:complexType name="spendPoints">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="userEmail" type="xs:string" />
+          <xs:element name="pointsToSpend" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>		
+	  <xs:complexType name="spendPointsResponse">
+        <xs:sequence>
+          <xs:element name="return" type="tns:CreditView" />
+        </xs:sequence>
+      </xs:complexType>
+	  
+	<!-- end  P2_SD Changes -->
+	  
+		 
     </xs:schema>
   </types>
 

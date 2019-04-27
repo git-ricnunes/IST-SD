@@ -2,6 +2,7 @@ package com.forkexec.pts.ws;
 
 import javax.jws.WebService;
 
+import com.forkexec.pts.domain.Credit;
 import com.forkexec.pts.domain.Points;
 
 /**
@@ -17,6 +18,7 @@ public class PointsPortImpl implements PointsPortType {
      */
     private final PointsEndpointManager endpointManager;
 
+    int version = 0;
     /** Constructor receives a reference to the endpoint manager. */
     public PointsPortImpl(final PointsEndpointManager endpointManager) {
 	this.endpointManager = endpointManager;
@@ -38,22 +40,25 @@ public class PointsPortImpl implements PointsPortType {
     }
 
     @Override
-    public int pointsBalance(final String userEmail) throws InvalidEmailFault_Exception {
-    	int userCredit = 0;
+    public CreditView pointsBalance(final String userEmail) throws InvalidEmailFault_Exception {
+    	Credit userCredit = null;
+    	
+    	System.out.println("POINTSBALANCE from: "+endpointManager.getWsName());
 		try {
 			userCredit = Points.getInstance().getCredit(userEmail);
 		} catch (InvalidEmailFault_Exception e) {
 			throwInvalidEmail("Email not found: " + userEmail);
 		}
 		
-      return userCredit;
+      return buildCreditView(userCredit);
     }
 
+    //TODO
     @Override
     public int addPoints(final String userEmail, final int pointsToAdd)
 	    throws InvalidEmailFault_Exception, InvalidPointsFault_Exception {
     	
-    	int userCredit =0;
+    	Credit userCredit=null;
     	
     	if(pointsToAdd <= 0 )
     		throwInvalidPoints("Number of points are invalid: " + pointsToAdd);
@@ -64,28 +69,43 @@ public class PointsPortImpl implements PointsPortType {
 			throwInvalidEmail("Email not found: " + userEmail);
 		}
     	
-        return userCredit;
+        return 1;
     }
 
     @Override
-    public int spendPoints(final String userEmail, final int pointsToSpend)
+    public CreditView spendPoints(final String userEmail, final int pointsToSpend)
 	    throws InvalidEmailFault_Exception, InvalidPointsFault_Exception, NotEnoughBalanceFault_Exception {
-    	int userCredit=0;
+    	
+    	Credit userCredit=null;
     	
     	if(pointsToSpend <= 0 )
     		throwInvalidPoints("Number of points are invalid: " + pointsToSpend);
     	
     	try {
-    		userCredit=Points.getInstance().subtractCredit(userEmail,pointsToSpend);
+    		userCredit = Points.getInstance().subtractCredit(userEmail,pointsToSpend);
+    		
 		} catch (InvalidEmailFault_Exception e) {
 			throwInvalidEmail("Email not found: " + userEmail);
 		} catch (NotEnoughBalanceFault_Exception e){
 			throwNotEnoughBalance("Not enough credits: " + userEmail);
 		}
     	
-        return userCredit;
+        return buildCreditView(userCredit);
 			
     }
+    
+ // View helpers ----------------------------------------------------------
+
+ 	 /** Helper to convert a domain object to a view. */
+ 	 private CreditView buildCreditView (Credit credit) {
+ 		 
+ 		 CreditView creditView = new CreditView();
+ 		 
+ 		 creditView.setTag(credit.getTag());
+ 		 creditView.setValue(credit.getValue());
+ 		 
+ 		 return creditView;
+ 	 }
 
     // Control operations ----------------------------------------------------
     // TODO
