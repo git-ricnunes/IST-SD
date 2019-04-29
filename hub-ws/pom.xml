@@ -43,6 +43,11 @@
 			<artifactId>uddi-naming</artifactId>
 			<version>${version.uddi-naming}</version>
 		</dependency>
+		<dependency>
+		    <groupId>org.javatuples</groupId>
+		    <artifactId>javatuples</artifactId>
+		    <version>1.2</version>
+		</dependency>
 		 <dependency>
 	        <groupId>com.forkexec.A65</groupId>
 	        <artifactId>rst-ws-cli</artifactId>

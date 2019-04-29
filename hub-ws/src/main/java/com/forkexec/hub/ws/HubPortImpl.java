@@ -303,6 +303,7 @@ public class HubPortImpl implements HubPortType {
 			for(String restUrl : restsUrls) {
 				clientPts = new PointsClient(restUrl);
 				clientPts.ctrlClear();
+				Hub.getInstance().clearUsers();
 			}
 		} catch (PointsClientException | UDDINamingException e1) {
 		

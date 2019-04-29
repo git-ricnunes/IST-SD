@@ -112,12 +112,12 @@ public class PointsClient  {
         return port.pointsBalanceAsync(userEmail, asyncHandler);
     }
 	
-	public Future<?> addPointsAsync(String userEmail, int pointsToAdd,  AsyncHandler<AddPointsResponse> asyncHandler) {
-    return port.addPointsAsync(userEmail, pointsToAdd, asyncHandler);
+	public Future<?> addPointsAsync(String userEmail,int tag, int pointsToAdd,  AsyncHandler<AddPointsResponse> asyncHandler) {
+    return port.addPointsAsync(userEmail, pointsToAdd,tag, asyncHandler);
 	}
 	
-	public Future<?> spendPointsAsync(String userEmail, int pointsToSpend, AsyncHandler<SpendPointsResponse> asyncHandler) {
-    return port.spendPointsAsync(userEmail, pointsToSpend, asyncHandler);
+	public Future<?> spendPointsAsync(String userEmail, int pointsToSpend, int tag, AsyncHandler<SpendPointsResponse> asyncHandler) {
+    return port.spendPointsAsync(userEmail, pointsToSpend,tag, asyncHandler);
 	}
 	
 	

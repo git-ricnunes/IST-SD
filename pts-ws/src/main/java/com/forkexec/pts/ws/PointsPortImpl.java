@@ -43,9 +43,12 @@ public class PointsPortImpl implements PointsPortType {
     public CreditView pointsBalance(final String userEmail) throws InvalidEmailFault_Exception {
     	Credit userCredit = null;
     	
-    	System.out.println("POINTSBALANCE from: "+endpointManager.getWsName());
 		try {
 			userCredit = Points.getInstance().getCredit(userEmail);
+			
+        	System.out.println("#METHOD: pointsBalance## User"+userEmail+"has "+userCredit.getValue()+" points  in server: "+endpointManager.getWsName());
+
+
 		} catch (InvalidEmailFault_Exception e) {
 			throwInvalidEmail("Email not found: " + userEmail);
 		}
@@ -55,25 +58,28 @@ public class PointsPortImpl implements PointsPortType {
 
     //TODO
     @Override
-    public int addPoints(final String userEmail, final int pointsToAdd)
+    public CreditView addPoints(final String userEmail,int tag, final int pointsToAdd)
 	    throws InvalidEmailFault_Exception, InvalidPointsFault_Exception {
     	
     	Credit userCredit=null;
     	
+
     	if(pointsToAdd <= 0 )
     		throwInvalidPoints("Number of points are invalid: " + pointsToAdd);
     	
     	try {
     		userCredit=Points.getInstance().addCredit(userEmail,pointsToAdd);
+        	System.out.println("#METHOD: addPoints## Adding "+pointsToAdd+" points to user:"
+    		+userEmail+" with the tag : "+userCredit.getTag()+" in server: "+endpointManager.getWsName());
 		} catch (InvalidEmailFault_Exception e) {
 			throwInvalidEmail("Email not found: " + userEmail);
 		}
     	
-        return 1;
+        return buildCreditView(userCredit);
     }
 
     @Override
-    public CreditView spendPoints(final String userEmail, final int pointsToSpend)
+    public CreditView spendPoints(final String userEmail,int tag, final int pointsToSpend)
 	    throws InvalidEmailFault_Exception, InvalidPointsFault_Exception, NotEnoughBalanceFault_Exception {
     	
     	Credit userCredit=null;

@@ -134,8 +134,6 @@ public class BaseIT {
 	 
 	 client.ctrlInitUserPoints(100);
 	 
-	  String email = "test@i.pt";
-	  client.activateAccount(email);
 	  
 	}
 

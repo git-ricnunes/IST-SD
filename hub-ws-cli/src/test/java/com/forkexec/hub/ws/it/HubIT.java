@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import com.forkexec.hub.ws.InvalidCreditCardFault_Exception;
+import com.forkexec.hub.ws.InvalidMoneyFault_Exception;
 import com.forkexec.hub.ws.InvalidUserIdFault_Exception;
 
 /**
@@ -14,13 +16,26 @@ public class HubIT extends BaseIT {
 	
 	
 	@Test
-	public void GetPointsTest() throws InvalidUserIdFault_Exception {
+	public void ReadTest() throws InvalidUserIdFault_Exception {
 		
 
-		  int i = client.accountBalance("test@i.pt");
-		  assertEquals(100,i);	
+		  int credits = client.accountBalance("test@iST.pt");
+		  assertEquals(100,credits);	
 
 
 	}
+	
+	@Test
+	public void WriteTest() throws InvalidUserIdFault_Exception, InvalidCreditCardFault_Exception, InvalidMoneyFault_Exception {
+		
+		  client.loadAccount("tes@ist.pt", 10, "5291329339651663");
+	
+		  int credits = client.accountBalance("tes@ist.pt");
+	
+		  assertEquals(1100,credits);	
+
+
+	}
+	
 	
 }
