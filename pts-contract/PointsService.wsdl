@@ -90,21 +90,19 @@
           <xs:element minOccurs="0" name="message" type="xs:string" />
         </xs:sequence>
       </xs:complexType>
-	  
-	 <!--  P2_SD Changes -->
-			
 	   <xs:complexType name="addPoints">
         <xs:sequence>
           <xs:element minOccurs="0" name="userEmail" type="xs:string" />
           <xs:element name="pointsToAdd" type="xs:int" />
-		  <xs:element name="tag" type="xs:int" />
         </xs:sequence>
       </xs:complexType>
       <xs:complexType name="addPointsResponse">
         <xs:sequence>
-          <xs:element name="return" type="tns:CreditView" />
+          <xs:element name="return" type="xs:int" />
         </xs:sequence>
       </xs:complexType>	
+	  
+	    <!--  P2_SD Changes -->
 	  <xs:complexType name="CreditView">
                 <xs:sequence>
                     <xs:element name="value" type="xs:int" />
@@ -124,7 +122,6 @@
 	<xs:complexType name="spendPoints">
         <xs:sequence>
           <xs:element minOccurs="0" name="userEmail" type="xs:string" />
-		  <xs:element name="tag" type="xs:int" />
           <xs:element name="pointsToSpend" type="xs:int" />
         </xs:sequence>
       </xs:complexType>		

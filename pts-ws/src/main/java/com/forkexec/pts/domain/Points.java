@@ -55,6 +55,7 @@ public class Points {
     
     public void clear(){
     	this.userPoints.clear();
+    	System.out.println("clear: hash has "+userPoints.size()+" users");
     }
     
 	public synchronized void createUser(String email) throws  InvalidEmailFault_Exception,EmailAlreadyExistsFault_Exception {
@@ -84,13 +85,13 @@ public class Points {
 				
 		Credit credit = userPoints.get(email);
 			
-		newBalance.addAndGet(points);
+		newBalance.addAndGet(credit.getValue()+points);
 		
 		credit.setValue(newBalance.get());
 		credit.setTag();
 		
 		userPoints.put(email,credit);
-		
+
 		return credit;
 
 	}

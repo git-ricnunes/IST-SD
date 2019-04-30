@@ -8,11 +8,6 @@ public class Credit {
 	public Credit(){
 		this.tag=0;
 	}
-	
-	public Credit(int tag, int val){
-		this.tag=tag;
-		this.value=val;
-	}
 
 	public int getValue() {
 		return value;
