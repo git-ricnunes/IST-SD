@@ -133,10 +133,6 @@ public class BaseIT {
 	 client.ctrlInitFood(initialMenus);
 	 
 	 client.ctrlInitUserPoints(100);
-	 
-	  String email = "test@i.pt";
-	  client.activateAccount(email);
-	  
 	}
 
 	@AfterClass

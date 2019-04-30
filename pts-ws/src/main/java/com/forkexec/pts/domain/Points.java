@@ -22,8 +22,8 @@ public class Points {
      * Constant representing the default initial balance for every new client
      */
     private static final int DEFAULT_INITIAL_BALANCE = 100;
-	private Map<String,Credit> userPoints = Collections.synchronizedMap(new HashMap<String, Credit>());
-	private int version;
+	private Map<String,AtomicInteger> userPoints = Collections.synchronizedMap(new HashMap<String, AtomicInteger>());;
+
     /**
      * Global with the current value for the initial balance of every new client
      */
@@ -55,7 +55,6 @@ public class Points {
     
     public void clear(){
     	this.userPoints.clear();
-    	System.out.println("clear: hash has "+userPoints.size()+" users");
     }
     
 	public synchronized void createUser(String email) throws  InvalidEmailFault_Exception,EmailAlreadyExistsFault_Exception {
@@ -66,37 +65,31 @@ public class Points {
 		if( userPoints.containsKey(email) )
 			throw new EmailAlreadyExistsFault_Exception("Email already exists!",null);
 
-		Credit credit = new Credit();
-		
-		credit.setValue(DEFAULT_INITIAL_BALANCE);
-		
-		userPoints.put(email, credit);
+			userPoints.put(email, initialBalance);
 	}
 	
-	public synchronized Credit addCredit(String email,int points) throws  InvalidEmailFault_Exception, InvalidPointsFault_Exception  {
+	public synchronized int addCredit(String email,int points) throws  InvalidEmailFault_Exception, InvalidPointsFault_Exception  {
 		
-		AtomicInteger newBalance = new AtomicInteger();
-		
+
 		if(email==null||email.equals("")||userPoints.get(email)==null)
 			throw new InvalidEmailFault_Exception("Invalid email!",null);
+
+		System.out.println("#####addCredit######"+userPoints+"######addCredit#####");
 
 		if( points <=0)
 			throw new InvalidPointsFault_Exception("Points added must be higher than 0.",null);
 				
-		Credit credit = userPoints.get(email);
+			AtomicInteger newBalance = new AtomicInteger();
+			newBalance.addAndGet(userPoints.get(email).get()+points);
 			
-		newBalance.addAndGet(credit.getValue()+points);
-		
-		credit.setValue(newBalance.get());
-		credit.setTag();
-		
-		userPoints.put(email,credit);
+			userPoints.put(email,newBalance);
+			System.out.println("#####addCredit2######"+userPoints+"######addCredit2#####");
 
-		return credit;
+		return userPoints.get(email).get();
 
 	}
 
-	public synchronized Credit subtractCredit(String email,int points) throws  InvalidEmailFault_Exception, InvalidPointsFault_Exception,
+	public synchronized int subtractCredit(String email,int points) throws  InvalidEmailFault_Exception, InvalidPointsFault_Exception,
 	NotEnoughBalanceFault_Exception  {
 		
 		if(email==null||email.equals("")||userPoints.get(email)==null)
@@ -105,51 +98,41 @@ public class Points {
 		if( points <=0)
 			throw new InvalidPointsFault_Exception("Points subtract must be higher than 0",null);
 		
+		System.out.println("#####subtractCredit######"+userPoints+"######subtractCredit#####");
 		
-		Credit credit = userPoints.get(email);
-		
-		Credit backupCredit = credit;
 		
 		AtomicInteger newBalance = new AtomicInteger();
-		newBalance.addAndGet(credit.getValue()+(points * -1));
+		newBalance.addAndGet(userPoints.get(email).get()+(points * -1));
 		
-		credit.setValue(newBalance.get());
-		
+		userPoints.put(email,newBalance);
 
-		if (userPoints.get(email).getValue() < 0){
+		if (userPoints.get(email).get() < 0){
 			
-			userPoints.put(email,backupCredit);
+			AtomicInteger oldBalance = new AtomicInteger();
+			oldBalance.addAndGet(userPoints.get(email).get()+points);
+			
+			userPoints.put(email,oldBalance);
 			throw  new NotEnoughBalanceFault_Exception("Not enough credit!",null);
-			
-		}else{
-			
-			credit.setTag();
-			userPoints.put(email,credit);
-		
 		}
-		
-		return credit ;
+		System.out.println("#####subtractCredit2######"+userPoints+"######subtractCredit2#####");
+
+		return userPoints.get(email).get() ;
 		
 	}
 
-	public synchronized Credit getCredit(String email) throws  InvalidEmailFault_Exception {
-				
+	public synchronized int getCredit(String email) throws  InvalidEmailFault_Exception {
+		
+		int returnPoints=0;
+		
 		if(email==null||email.equals("")||userPoints.get(email)==null)
 			throw new InvalidEmailFault_Exception("Invalid email!",null);
 				
-			Credit credit = userPoints.get(email);
-			credit.setTag();
+		System.out.println("#####getCredit######"+userPoints+"######getCredit#####");
+			returnPoints = userPoints.get(email).get();
+		System.out.println("#####getCredit2######"+userPoints+"######getCredit2#####");
 
-			return  credit;
+			return  returnPoints;
 			
-	}
-
-	public int getVersion() {
-		return version;
-	}
-
-	public void setVersion(int version) {
-		this.version = version;
 	}
     
     

@@ -5,10 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
-import javax.xml.ws.AsyncHandler;
-import javax.xml.ws.Response;
 
 import com.forkexec.hub.ws.FoodId;
 import com.forkexec.hub.ws.InvalidFoodIdFault_Exception;
@@ -19,7 +15,8 @@ import com.forkexec.hub.ws.InvalidUserIdFault_Exception;
 import com.forkexec.hub.ws.NotEnoughPointsFault_Exception;
 import com.forkexec.pts.ws.EmailAlreadyExistsFault_Exception;
 import com.forkexec.pts.ws.InvalidEmailFault_Exception;
-import com.forkexec.pts.ws.PointsBalanceResponse;
+import com.forkexec.pts.ws.InvalidPointsFault_Exception;
+import com.forkexec.pts.ws.NotEnoughBalanceFault_Exception;
 import com.forkexec.pts.ws.cli.PointsClient;
 import com.forkexec.pts.ws.cli.PointsClientException;
 import com.forkexec.rst.ws.BadMenuIdFault_Exception;
@@ -35,7 +32,6 @@ import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDIRecord;
 
-
 /**
  * Hub
  *
@@ -47,9 +43,6 @@ public class Hub {
 	
 	private String uddiURL = null;
 	private Map<String,User> users = new HashMap<String,User>();
-    static boolean received = false;
-    static int maxTag = 0;
-    static int maxVal = 0;
 
 	// Singleton -------------------------------------------------------------
 
@@ -75,23 +68,17 @@ public class Hub {
 	String uddiUrl = Hub.getInstance().getUddiURL();
 	PointsClient pc = null;
 	
-	
-	for(int i = 1; i <= 3 ; i++) {	
-	
-			try {
-					pc = new PointsClient(uddiUrl, "A65_Points"+i);
-				} catch (PointsClientException e1) {
-					// IGNORE
-				}
-		
-			try {
-				pc.activateUser(email);
-				User user = new User(email);
-				users.put(email,user);
-			} catch (EmailAlreadyExistsFault_Exception | InvalidEmailFault_Exception e) {
-				throw new InvalidUserIdFault_Exception("UserID invalid!", null);
-			}
-		
+		try {
+			pc = new PointsClient(uddiUrl, "A65_Points1");
+		} catch (PointsClientException e) {
+		}
+		try {
+			pc.activateUser(email);
+			User user = new User(email);
+			users.put(email,user);
+		} catch (EmailAlreadyExistsFault_Exception | InvalidEmailFault_Exception e) {
+			
+			throw new InvalidUserIdFault_Exception("UserID invalid!", null);
 		}
 		
 	}
@@ -135,15 +122,26 @@ public class Hub {
 		Hub.getInstance().getCart(email).clear();
 	}
 
+
 	public int getCredit(String email) throws  InvalidUserIdFault_Exception, InvalidUserIdFault_Exception {
 		
+		String uddiUrl = Hub.getInstance().getUddiURL();
+		PointsClient pc = null;
 		int creditReturn=0;
-	
-		creditReturn = READ(email);
-		
-		return creditReturn;
+			try {
+				pc = new PointsClient(uddiUrl, "A65_Points1");
+			} catch (PointsClientException e) {
+				
+			}
 			
-	}
+			try {
+				creditReturn =  pc.pointsBalance(email);
+			} catch (InvalidEmailFault_Exception e) {
+				throw new InvalidUserIdFault_Exception("Invali userId !",null);
+			}
+		
+			return creditReturn;
+			}
 	
 	public List<FoodHub> getCart(String email) throws  InvalidUserIdFault_Exception {
 		
@@ -168,18 +166,16 @@ public class Hub {
 		
 		for(FoodHub fh: cartitem)
 			points += + (fh.getPreco()*fh.getQuantidade());
-
-//TODO:WRITE
-
-//					try {
-//						pc.spendPoints(email,points);
-//					} catch (InvalidEmailFault_Exception e1) {
-//						throw new InvalidUserIdFault_Exception("Invalid UserId!", null);
-//					} catch (InvalidPointsFault_Exception e1) {
-//							//todo
-//					} catch (NotEnoughBalanceFault_Exception e1) {
-//						throw new NotEnoughPointsFault_Exception("Not enough points to order!", null);
-//					}
+		
+					try {
+						pc.spendPoints(email,points);
+					} catch (InvalidEmailFault_Exception e1) {
+						throw new InvalidUserIdFault_Exception("Invalid UserId!", null);
+					} catch (InvalidPointsFault_Exception e1) {
+							//todo
+					} catch (NotEnoughBalanceFault_Exception e1) {
+						throw new NotEnoughPointsFault_Exception("Not enough points to order!", null);
+					}
 			
 		for(FoodHub fh: cartitem){		
 	
@@ -220,21 +216,19 @@ public class Hub {
 		}
 		
 		try {
-			
-			//WRITE
 			pc = new PointsClient(uddiUrl, "A65_Points1");
 		} catch (PointsClientException e) {
 			
 		}
 		
-//		try {
-//			pc.addPoints(email, creditsToAdd);
-//		} catch (InvalidEmailFault_Exception e) {
-//			throw new InvalidUserIdFault_Exception("Invalid user email!", null);
-//		} catch (InvalidPointsFault_Exception e) {
-//			throw new InvalidMoneyFault_Exception("Invalid credits!", null);
-//
-//		}		
+		try {
+			pc.addPoints(email, creditsToAdd);
+		} catch (InvalidEmailFault_Exception e) {
+			throw new InvalidUserIdFault_Exception("Invalid user email!", null);
+		} catch (InvalidPointsFault_Exception e) {
+			throw new InvalidMoneyFault_Exception("Invalid credits!", null);
+
+		}		
 		
 	}
 	
@@ -324,71 +318,6 @@ public class Hub {
 		
 		return retfoodHub;
 		
-	}
-	
-	public  synchronized  int WRITE(String email){
-		//TODO
-		return 0;
-	}
-	
-	public  synchronized  int READ(String email){
-		
-		PointsClient pc = null;
-		List<Response<PointsBalanceResponse>> responses = new ArrayList<Response<PointsBalanceResponse>>();
-		int retPoints;
-		
-		String uddiUrl = Hub.getInstance().getUddiURL();
-
-
-		for(int i = 1; i <= 3 ; i++) {	
-			
-			 try {
-				pc = new PointsClient(uddiUrl,"A65_Points"+i);
-	            // asynchronous call with callback
-
-				pc.pointsBalanceAsync(email, new AsyncHandler<PointsBalanceResponse>() {
-	                @Override
-	                public void handleResponse(Response<PointsBalanceResponse> response) {
-	                
-	                    try {
-	                        System.out.println();
-	                        System.out.print("(Callback) Asynchronous call result arrived: ");
-	                        QCTest(response.get().getReturn().getValue(),response.get().getReturn().getTag());
-	                        received = true;
-	                    } catch (InterruptedException e) {
-	                        System.out.println("Caught interrupted exception.");
-	                        System.out.print("Cause: ");
-	                        System.out.println(e.getCause());
-	                    } catch (ExecutionException e) {
-	                        System.out.println("Caught execution exception.");
-	                        System.out.print("Cause: ");
-	                        System.out.println(e.getCause());
-	                    }
-	                }
-	            });
-				
-				 while (!received) {
-		                try {
-							Thread.sleep(10 /* milliseconds */);
-						} catch (InterruptedException e) {
-							// IGNORE
-						}
-		                System.out.print(".");
-		                System.out.flush();
-		            }
-				 
-			} catch (PointsClientException e1) {
-				// IGNORE
-			}
-			
-		}
-		return maxTag;
-	}
-	
-	
-	public void QCTest(int tag,int val){
-
-		maxTag=tag;
 	}
 	
 	public void initUddiURL(String uddiURL) {

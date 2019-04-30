@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.After;
 import org.junit.Test;
 
-import com.forkexec.pts.ws.CreditView;
 import com.forkexec.pts.ws.EmailAlreadyExistsFault_Exception;
 import com.forkexec.pts.ws.InvalidEmailFault_Exception;
 import com.forkexec.pts.ws.InvalidPointsFault_Exception;
@@ -13,7 +12,7 @@ import com.forkexec.pts.ws.NotEnoughBalanceFault_Exception;
 
 
 public class PointsIT extends BaseIT {
-/*	
+	
 	@After
     public void tearDown() {
         
@@ -64,7 +63,7 @@ public class PointsIT extends BaseIT {
 		}
 	
 				
-		CreditView pointsTest = client.pointsBalance(validemail);
+		int pointsTest = client.pointsBalance(validemail);
 		
 		assertEquals(pointsTest, 100);
 
@@ -76,7 +75,7 @@ public class PointsIT extends BaseIT {
 		
 		String validemail = "";
 
-		CreditView pointsTest = client.pointsBalance(validemail);
+		int pointsTest = client.pointsBalance(validemail);
 		
 		assertEquals(pointsTest, 100);
 
@@ -88,7 +87,7 @@ public class PointsIT extends BaseIT {
 		
 		String validemail = null;
 
-		CreditView pointsTest = client.pointsBalance(validemail);
+		int pointsTest = client.pointsBalance(validemail);
 		
 		assertEquals(pointsTest, 100);
 		
@@ -156,7 +155,7 @@ public class PointsIT extends BaseIT {
 		}
 		
 
-		CreditView pointsTest = client.spendPoints(validemail, pointsToSpend);
+		int pointsTest = client.spendPoints(validemail, pointsToSpend);
 		
 		assertEquals(pointsTest, 80);
 
@@ -170,7 +169,7 @@ public class PointsIT extends BaseIT {
 		String validemail = "";
 		int pointsToSpend = 10;
 
-		CreditView pointsTest = client.spendPoints(validemail, pointsToSpend);
+		int pointsTest = client.spendPoints(validemail, pointsToSpend);
 		
 		assertEquals(pointsTest, 90);
 
@@ -184,7 +183,7 @@ public class PointsIT extends BaseIT {
 		String validemail = null;
 		int pointsToSpend = 10;
 
-		CreditView pointsTest = client.spendPoints(validemail, pointsToSpend);
+		int pointsTest = client.spendPoints(validemail, pointsToSpend);
 		
 		assertEquals(pointsTest, 90);
 
@@ -200,7 +199,7 @@ public class PointsIT extends BaseIT {
 		int pointsToSpend = -1;
 	
 		
-		CreditView pointsTest = client.spendPoints(validemail, pointsToSpend);
+		int pointsTest = client.spendPoints(validemail, pointsToSpend);
 		
 		assertEquals(pointsTest, 90);
 
@@ -221,13 +220,13 @@ public class PointsIT extends BaseIT {
 		}
 		
 		
-		CreditView pointsTest = client.spendPoints(validemail, pointsToSpend);
+		int pointsTest = client.spendPoints(validemail, pointsToSpend);
 		
 		assertEquals(pointsTest, 90);
 
 
 		}
-*/
+
 }
 
 

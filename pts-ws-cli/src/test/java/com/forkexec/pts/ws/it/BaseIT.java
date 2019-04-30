@@ -41,11 +41,8 @@ public class BaseIT {
 
 		if ("true".equalsIgnoreCase(uddiEnabled)) {
 			client = new PointsClient(uddiURL, wsName);
-
 		} else {
 			client = new PointsClient(wsURL);
-
-			
 		}
 		client.setVerbose("true".equalsIgnoreCase(verboseEnabled));
 		

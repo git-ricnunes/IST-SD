@@ -29,14 +29,10 @@ public class PointsClientApp {
 
 		if (wsURL != null) {
 			System.out.printf("Creating client for server at %s%n", wsURL);
-			
 			client = new PointsClient(wsURL);
-			
 		} else if (uddiURL != null) {
 			System.out.printf("Creating client using UDDI at %s for server with name %s%n", uddiURL, wsName);
-			
 			client = new PointsClient(uddiURL, wsName);
-
 		}
 
 		// The following remote invocation is just a basic example.
