@@ -15,8 +15,6 @@ import com.forkexec.hub.ws.InvalidUserIdFault_Exception;
 import com.forkexec.hub.ws.NotEnoughPointsFault_Exception;
 import com.forkexec.pts.ws.EmailAlreadyExistsFault_Exception;
 import com.forkexec.pts.ws.InvalidEmailFault_Exception;
-import com.forkexec.pts.ws.InvalidPointsFault_Exception;
-import com.forkexec.pts.ws.NotEnoughBalanceFault_Exception;
 import com.forkexec.pts.ws.cli.PointsClient;
 import com.forkexec.pts.ws.cli.PointsClientException;
 import com.forkexec.rst.ws.BadMenuIdFault_Exception;
@@ -171,11 +169,12 @@ public class Hub {
 						pc.spendPoints(email,points);
 					} catch (InvalidEmailFault_Exception e1) {
 						throw new InvalidUserIdFault_Exception("Invalid UserId!", null);
-					} catch (InvalidPointsFault_Exception e1) {
-							//todo
-					} catch (NotEnoughBalanceFault_Exception e1) {
-						throw new NotEnoughPointsFault_Exception("Not enough points to order!", null);
 					}
+//					} catch (InvalidPointsFault_Exception e1) {
+//							//todo
+//					} catch (NotEnoughBalanceFault_Exception e1) {
+//						throw new NotEnoughPointsFault_Exception("Not enough points to order!", null);
+//					}
 			
 		for(FoodHub fh: cartitem){		
 	
@@ -225,10 +224,11 @@ public class Hub {
 			pc.addPoints(email, creditsToAdd);
 		} catch (InvalidEmailFault_Exception e) {
 			throw new InvalidUserIdFault_Exception("Invalid user email!", null);
-		} catch (InvalidPointsFault_Exception e) {
-			throw new InvalidMoneyFault_Exception("Invalid credits!", null);
-
-		}		
+		}
+//		} catch (InvalidPointsFault_Exception e) {
+//			throw new InvalidMoneyFault_Exception("Invalid credits!", null);
+//
+//		}		
 		
 	}
 	

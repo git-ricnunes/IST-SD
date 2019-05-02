@@ -15,9 +15,7 @@ public class PointsIT extends BaseIT {
 		
 	@After
     public void tearDown() {
-		
-//		client.ctrlClear();
-        
+		client.ctrlClear();
     }
 	
 	@Test
@@ -42,7 +40,6 @@ public class PointsIT extends BaseIT {
 		pointsTest = client.pointsBalance(validemail);
 
 		assertEquals(pointsTest, 50);
-		
 
 	}
 
@@ -58,7 +55,7 @@ public class PointsIT extends BaseIT {
 		client.addPoints(validemail, pointsToAdd);
 		
 		try {
-			System.out.println("###Start Sleeping: Sleeping for 30 seconds Start server 3####");
+			System.out.println("###Start Sleeping: Sleeping for 15 seconds Start server 3####");
 			TimeUnit.SECONDS.sleep(15);
 		} catch (InterruptedException e) {
 			//ignore
@@ -82,7 +79,7 @@ public class PointsIT extends BaseIT {
 		System.out.println("###End Sleeping####");
 		
 		try {
-			System.out.println("###Start Sleeping:Sleeping for 30 seconds Start server 2####");
+			System.out.println("###Start Sleeping:Sleeping for 15 seconds Start server 2####");
 			TimeUnit.SECONDS.sleep(15);
 		} catch (InterruptedException e) {
 			//ignore

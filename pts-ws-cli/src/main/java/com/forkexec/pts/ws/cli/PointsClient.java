@@ -45,7 +45,15 @@ public class PointsClient {
 	/** WS end point address */
 	private String wsURL = null; // default value is defined inside WSDL
 	
-
+	/** Servers available for the QC implemetation */
+	private int N;
+	
+	/** Quorom for the QC implementation */
+	private int Q;
+	
+	/*Class containing the max value/tag for the QC*/
+	private CreditView cv;
+	
 	public String getWsURL() {
 		return wsURL;
 	}
@@ -57,7 +65,7 @@ public class PointsClient {
 	/** output option **/
 	private boolean verbose = true;
 
-	private CreditView cv;
+	
 
 	public boolean isVerbose() {
 		return verbose;
@@ -75,17 +83,17 @@ public class PointsClient {
 
 	/** constructor with provided UDDI location and name */
 	public PointsClient(String uddiURL, String wsName) throws PointsClientException {
+		
 		this.uddiURL = uddiURL;
-		this.wsName = wsName;
+		this.wsName = "A65_Points";
+		this.N=3;
+		this.Q=(int) Math.floor(N/2)+1;
 		CreditView cv=new CreditView();
 		this.cv = cv;
 				
 		cv.setTag(0);
 		cv.setValue(0);
 		
-		uddiLookup();
-		createStub();
-	
 	}
 
 	/** UDDI lookup */
@@ -132,6 +140,17 @@ public class PointsClient {
 		port.activateUser(userEmail);
 	}
 	
+	/* * writeClient - Auxilary function for the implementation of the QC
+	 * 
+	 *   input : email - the user hash key to get points 
+	 *   		 value - the credit value to add/subtract the user 
+	 * 
+	 *   description :  -This function helps the client class to implement the write function in QC fault tolerance system.
+	 *   				-Get the value with highest tag availabe, increments that tag and assign the new value to that tag.
+	 *   			    -It calls N (server and replication servers) times the available servers and replace the previous value with the new value with the async function.
+	 *    				-It waits for each async responses of Q servers (QC majority), during this step it removes responses that were already processed.
+	 * */
+	
 	public synchronized void writeClient(String email, int value){
 		cv = readClient(email);
 		int newTag = cv.getTag() + 1;
@@ -140,21 +159,23 @@ public class PointsClient {
 		List<Response<WriteResponse>> responses = new ArrayList<Response<WriteResponse>>();
 		Response<WriteResponse> responsedelete = null;
 
-		for(int i = 1; i <= 3; i++) {	
+		for(int i = 1; i <= N /*3*/; i++) {	
 				
-				this.wsName = "A65_Points"+i;
+			this.wsName= this.wsName.substring(0,10)+i;
+				
 					try {
+						
 						uddiLookup();
 						createStub();
+						
 						try {
-							try {
-								port.activateUser(email);
-							} catch (InvalidEmailFault_Exception e) {
-								//ignore
+									port.activateUser(email);
+								} catch (InvalidEmailFault_Exception e) {
+									//IGNORE
+								} catch (EmailAlreadyExistsFault_Exception e) {
+									//IGNORE user already registred
 							}
-						} catch (EmailAlreadyExistsFault_Exception e) {
-							// IGNORE user already registred
-						}
+						
 						port.writeAsync(email,newTag,cv.getValue()+value, new AsyncHandler<WriteResponse>() {
 							@Override
 							public void handleResponse(Response<WriteResponse> response) {
@@ -162,10 +183,12 @@ public class PointsClient {
 								}
 							});
 					} catch (PointsClientException e) {
-						continue;
+						//IGNORE servers that are down, to avoid error in the activateUser skip to the next server
+						continue; 
 					}
-		}
-		while(received <  2 ) {
+				}
+		
+		while(received <  this.Q /*2*/ ) {
 			for(Response<WriteResponse> response : responses) {
 				if(response.isDone()) {
 					received++;
@@ -176,6 +199,18 @@ public class PointsClient {
 			responses.remove(responsedelete);	
 		}
 	}
+	
+	/* * readClient - Auxilary function for the implementation of the QC
+	 * 
+	 *   input : email - the user hash key to get points 
+	 * 	 
+	 *   output : CreditView class with the value with the maximun tag available in the servers and replication servers. 
+	 *     
+	 *   description :  -This function helps the client class to implement the QC fault tolerance system.
+	 *   			    -It calls N times the available servers and get all the pair <value,tag> available in each of the servers.
+	 *    				-It waits for the response of Q servers ( QC majority) and with each response checks if there is a need to refresh the value to return.
+	 * */
+	
 
 	public synchronized CreditView readClient(String userEmail){
 	
@@ -183,20 +218,18 @@ public class PointsClient {
 		String uddiUrl = this.getuddiURL();
 		List<Response<ReadResponse>> responses = new ArrayList<Response<ReadResponse>>();
 		Response<ReadResponse> responsedelete = null;
-	
-		System.out.println("read tag"+cv.getTag());
-
-		
-		for(int i = 1; i <= 3 ; i++) {
+			
+		for(int i = 1; i <= N /*3*/ ; i++) {
 				
-			this.wsName = "A65_Points"+i;
+			this.wsName= this.wsName.substring(0,10)+i;
+			
 				try {
 					uddiLookup();
 					createStub();
 					try {
 						port.activateUser(userEmail);
 					} catch (EmailAlreadyExistsFault_Exception e) {
-						// IGNORE
+						//IGNORE user already registred
 					} catch (InvalidEmailFault_Exception e) {
 					
 					}
@@ -209,13 +242,14 @@ public class PointsClient {
 						});
 	
 				} catch (PointsClientException e) {
+					//IGNORE servers that are down, to avoid error in the activateUser skip to the next server
 					continue;
 				}
 			}	
 	
 	 		//Check if there is consensus in the quorum
-	
-	 		while (received < 2 ) {
+		
+		while (received < this.Q /*2*/ ) {
 	 			System.out.println("Responses:"+responses.size());
 					for(Response<ReadResponse> response : responses) {
 						if(response.isDone()){
@@ -227,7 +261,6 @@ public class PointsClient {
 								}
 							} catch (InterruptedException|ExecutionException e2) {
 								// IGNORE
-								
 							}
 						responsedelete = response;	
 						break;
@@ -247,12 +280,12 @@ public class PointsClient {
 	}
 	
 	public void addPoints(String userEmail, int pointsToAdd)
-			throws InvalidEmailFault_Exception/*, InvalidPointsFault_Exception*/ {
+			throws InvalidEmailFault_Exception{
 			writeClient(userEmail,pointsToAdd);
 	}
 
 	public void spendPoints(String userEmail, int pointsToSpend)
-			throws InvalidEmailFault_Exception/*, InvalidPointsFault_Exception, NotEnoughBalanceFault_Exception*/ {
+			throws InvalidEmailFault_Exception{
 			int pointsConversion = pointsToSpend * -1;
 			writeClient(userEmail,pointsConversion);
 	}
@@ -265,9 +298,9 @@ public class PointsClient {
 
 	public void ctrlClear() {
 		
-		for(int i = 1; i <= 3 ; i++) {
+		for(int i = 1; i <= N /*3*/ ; i++) {
 			
-			this.wsName = "A65_Points"+i;
+			this.wsName= this.wsName.substring(0,10)+i;
 				try {
 					uddiLookup();
 					createStub();
@@ -281,9 +314,9 @@ public class PointsClient {
 	}
 
 	public void ctrlInit(int startPoints) throws BadInitFault_Exception {
-		for(int i = 1; i <= 3 ; i++) {
+		for(int i = 1; i <= N /*3*/ ; i++) {
 			
-			this.wsName = "A65_Points"+i;
+			this.wsName= this.wsName.substring(0,10)+i;
 				try {
 					uddiLookup();
 					createStub();

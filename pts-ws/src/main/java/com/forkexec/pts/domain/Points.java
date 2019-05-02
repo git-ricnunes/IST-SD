@@ -83,15 +83,12 @@ public class Points {
 			
 	}
 	
-	public synchronized int addCredit(String email,int tag,int points) throws  InvalidEmailFault_Exception/*, InvalidPointsFault_Exception  */{
+	public synchronized int addCredit(String email,int tag,int points) throws  InvalidEmailFault_Exception{
 		
 
 		if(email==null||email.equals("")||userPoints.get(email)==null)
 			throw new InvalidEmailFault_Exception("Invalid email!",null);
-
-//		if( points <=0)
-//			throw new InvalidPointsFault_Exception("Points added must be higher than 0.",null);
-//				
+				
 			AtomicInteger newBalance = new AtomicInteger();
 			newBalance.addAndGet(points);
 			
