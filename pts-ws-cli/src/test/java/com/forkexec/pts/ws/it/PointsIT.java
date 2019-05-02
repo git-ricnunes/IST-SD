@@ -2,230 +2,102 @@ package com.forkexec.pts.ws.it;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 import org.junit.Test;
 
 import com.forkexec.pts.ws.EmailAlreadyExistsFault_Exception;
 import com.forkexec.pts.ws.InvalidEmailFault_Exception;
-import com.forkexec.pts.ws.InvalidPointsFault_Exception;
-import com.forkexec.pts.ws.NotEnoughBalanceFault_Exception;
-
+import com.forkexec.pts.*;
 
 public class PointsIT extends BaseIT {
-	
+		
 	@After
     public void tearDown() {
+		
+//		client.ctrlClear();
         
     }
 	
 	@Test
-	public void activateUserTest() throws EmailAlreadyExistsFault_Exception, InvalidEmailFault_Exception    {
+	public void okQCTest() throws InvalidEmailFault_Exception    {
 		
-		
-		String validemail = "mrasquin1@ist.utl.pt";
-		
-		client.activateUser(validemail);
-
-	}
-	
-	@Test(expected = EmailAlreadyExistsFault_Exception.class)
-	public void activateExistingUserTest() throws EmailAlreadyExistsFault_Exception, InvalidEmailFault_Exception    {
-		
-		
-		String validemail = "mrasquin2@ist.utl.pt";
-		
-		client.activateUser(validemail);
-		client.activateUser(validemail);
-
-	}
-	
-	@Test(expected = InvalidEmailFault_Exception.class)
-	public void activateInvalidUserTest() throws EmailAlreadyExistsFault_Exception, InvalidEmailFault_Exception    {
-		
-		
-		String invalidemail = "";
-		
-		client.activateUser(invalidemail);
-
-	}
-	
-
-	@Test
-	public void pointsBalanceTest() throws InvalidEmailFault_Exception    {
-		
-		String validemail = "ricanune1@ist.utl.pt";
-		
-		
-		try {
-			client.activateUser(validemail);
-		} catch (EmailAlreadyExistsFault_Exception e) {
-		
-		}
-	
-				
-		int pointsTest = client.pointsBalance(validemail);
-		
-		assertEquals(pointsTest, 100);
-
-
-	}
-	
-	@Test(expected = InvalidEmailFault_Exception.class)
-	public void pointsBalanceInvalidEmailFaultTest() throws InvalidEmailFault_Exception    {
-		
-		String validemail = "";
-
-		int pointsTest = client.pointsBalance(validemail);
-		
-		assertEquals(pointsTest, 100);
-
-
-	}
-	
-	@Test(expected = InvalidEmailFault_Exception.class)
-	public void pointsBalanceInvalidEmailFaultTest2() throws InvalidEmailFault_Exception    {
-		
-		String validemail = null;
-
-		int pointsTest = client.pointsBalance(validemail);
-		
-		assertEquals(pointsTest, 100);
-		
-	}
-	
-	
-	@Test
-	public void addPointsTest() throws InvalidEmailFault_Exception, InvalidPointsFault_Exception    {
-		
-		String validemail = "ricanune2@ist.utl.pt";
+		String validemail = "ricanune@ist.utl.pt";
 		int pointsToAdd= 10;
+		int pointsToSpend= 80;
 		
+		client.setVerbose(false);
+
+		client.addPoints(validemail, pointsToAdd);
+
+		client.addPoints(validemail, pointsToAdd);
 		
-		try {
-			client.activateUser(validemail);
-		} catch (EmailAlreadyExistsFault_Exception e) {
+		int pointsTest = client.pointsBalance(validemail);
 		
-		}
+		client.addPoints(validemail, pointsToAdd);
 	
-		int pointsTest = client.addPoints(validemail, pointsToAdd);
+		client.spendPoints(validemail, pointsToSpend);
 		
-		assertEquals(pointsTest, 110);
+		pointsTest = client.pointsBalance(validemail);
 
-
-	}
-	
-	@Test(expected = InvalidEmailFault_Exception.class)
-	public void addPointsInvalidEmailTest() throws InvalidEmailFault_Exception, InvalidPointsFault_Exception    {
+		assertEquals(pointsTest, 50);
 		
-		String validemail = "";
-		int pointsToAdd= 10;
-		
-		
-
-		int pointsTest = client.addPoints(validemail, pointsToAdd);
-		
-		assertEquals(pointsTest, 110);
 
 	}
-	
-	@Test(expected = InvalidPointsFault_Exception.class)
-	public void addPointsInvalidPointsTest() throws InvalidEmailFault_Exception, InvalidPointsFault_Exception    {
-		
-		String validemail = "ricanune3@ist.utl.pt";
-		int pointsToAdd= -1;
-		
-		
-	
-		int pointsTest = client.addPoints(validemail, pointsToAdd);
-		
-		assertEquals(pointsTest, 110);
 
-	}
-	
 	@Test
-	public void spendPointsTest() throws InvalidEmailFault_Exception, InvalidPointsFault_Exception, NotEnoughBalanceFault_Exception   {
+	public void failureQCTest() throws InvalidEmailFault_Exception    {
 		
-		String validemail = "ricanune4@ist.utl.pt";
-		int pointsToSpend = 20;
+		String validemail = "ricanune@ist.utl.pt";
+		int pointsToAdd= 10;
+		int pointsToSpend= 80;
+		
+		client.setVerbose(false);
+
+		client.addPoints(validemail, pointsToAdd);
 		
 		try {
-			client.activateUser(validemail);
-		} catch (EmailAlreadyExistsFault_Exception e) {
-		
+			System.out.println("###Start Sleeping: Sleeping for 30 seconds Start server 3####");
+			TimeUnit.SECONDS.sleep(15);
+		} catch (InterruptedException e) {
+			//ignore
 		}
 		
+		System.out.println("###End Sleeping####");
 
-		int pointsTest = client.spendPoints(validemail, pointsToSpend);
+		client.addPoints(validemail, pointsToAdd);
 		
-		assertEquals(pointsTest, 80);
-
-
- 	}
-	
-	@Test(expected = InvalidEmailFault_Exception.class)
-	public void spendPointsInvalidEmailFaultTest() throws InvalidEmailFault_Exception, 
-	InvalidPointsFault_Exception, NotEnoughBalanceFault_Exception   {
+		int pointsTest = client.pointsBalance(validemail);
 		
-		String validemail = "";
-		int pointsToSpend = 10;
-
-		int pointsTest = client.spendPoints(validemail, pointsToSpend);
-		
-		assertEquals(pointsTest, 90);
-
-
-	}
-	
-	@Test(expected = InvalidEmailFault_Exception.class)
-	public void spendPointsInvalidEmailFaultTest2() throws InvalidEmailFault_Exception, 
-	InvalidPointsFault_Exception, NotEnoughBalanceFault_Exception   {
-		
-		String validemail = null;
-		int pointsToSpend = 10;
-
-		int pointsTest = client.spendPoints(validemail, pointsToSpend);
-		
-		assertEquals(pointsTest, 90);
-
-
-	}
-	
-	
-	@Test(expected = InvalidPointsFault_Exception.class)
-	public void spendPointsInvalidPointsFaultTest() throws InvalidEmailFault_Exception, 
-	InvalidPointsFault_Exception, NotEnoughBalanceFault_Exception   {
-		
-		String validemail = "ricanune5@ist.utl.pt";
-		int pointsToSpend = -1;
-	
-		
-		int pointsTest = client.spendPoints(validemail, pointsToSpend);
-		
-		assertEquals(pointsTest, 90);
-
-	}
-	
-	@Test(expected = NotEnoughBalanceFault_Exception.class)
-	public void spendPointsNotEnoughBalanceFaultTest() throws InvalidEmailFault_Exception, 
-	InvalidPointsFault_Exception, NotEnoughBalanceFault_Exception   {
-		
-		String validemail = "ricanune6@ist.utl.pt";
-		int pointsToSpend = 200;
-		
+		client.addPoints(validemail, pointsToAdd);
 		
 		try {
-			client.activateUser(validemail);
-		} catch (EmailAlreadyExistsFault_Exception e) {
-		
+			System.out.println("###Start Sleeping:Sleeping for 5 seconds Stop server 2####");
+			TimeUnit.SECONDS.sleep(5);
+		} catch (InterruptedException e) {
+			//ignore
 		}
 		
+		System.out.println("###End Sleeping####");
 		
-		int pointsTest = client.spendPoints(validemail, pointsToSpend);
-		
-		assertEquals(pointsTest, 90);
-
-
+		try {
+			System.out.println("###Start Sleeping:Sleeping for 30 seconds Start server 2####");
+			TimeUnit.SECONDS.sleep(15);
+		} catch (InterruptedException e) {
+			//ignore
 		}
+		
+		System.out.println("###End Sleeping####");
+
+		client.spendPoints(validemail, pointsToSpend);
+		
+		pointsTest = client.pointsBalance(validemail);
+
+		assertEquals(pointsTest, 50);
+		
+
+	}
 
 }
 

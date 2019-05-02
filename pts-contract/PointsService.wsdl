@@ -31,6 +31,10 @@
       <xs:element name="pointsBalanceResponse" type="tns:pointsBalanceResponse" />
       <xs:element name="spendPoints" type="tns:spendPoints" />
       <xs:element name="spendPointsResponse" type="tns:spendPointsResponse" />
+		<xs:element name="write" type="tns:write" />
+      <xs:element name="writeResponse" type="tns:writeResponse" />
+	   <xs:element name="read" type="tns:read" />
+      <xs:element name="readResponse" type="tns:readResponse" />									  
       <xs:complexType name="ctrlClear">
         <xs:sequence />
       </xs:complexType>
@@ -120,6 +124,38 @@
           <xs:element minOccurs="0" name="message" type="xs:string" />
         </xs:sequence>
       </xs:complexType>
+	  
+	  <xs:complexType name="read">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="userEmail" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+	   <xs:complexType name="readResponse">
+        <xs:sequence>
+          <xs:element name="return" type="tns:CreditView" />
+        </xs:sequence>
+      </xs:complexType>
+	  
+	  <xs:complexType name="write">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="userEmail" type="xs:string" />
+		  <xs:element name="tag" type="xs:int" />
+          <xs:element name="points" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+	   <xs:complexType name="writeResponse">
+        <xs:sequence>
+          <xs:element name="return" type="tns:CreditView" />
+        </xs:sequence>
+      </xs:complexType>
+	  
+	    <xs:complexType name="CreditView">
+                <xs:sequence>
+                    <xs:element name="value" type="xs:int" />
+                    <xs:element name="tag" type="xs:int" />
+                </xs:sequence>
+		</xs:complexType>
+	  
     </xs:schema>
   </types>
 
@@ -181,6 +217,18 @@
   <message name="NotEnoughBalanceFault">
     <part element="tns:NotEnoughBalanceFault" name="fault" />
   </message>
+  <message name="read">
+    <part element="tns:read" name="parameters" />
+  </message>
+ <message name="readResponse">
+    <part element="tns:readResponse" name="parameters" />
+  </message>
+  <message name="write">
+    <part element="tns:write" name="parameters" />
+  </message>
+   <message name="writeResponse">
+    <part element="tns:writeResponse" name="parameters" />
+  </message>
 
   <!--  Port type (interface). -->
   <!--  Each operation has input, output and fault messages. -->
@@ -209,18 +257,14 @@
       <input message="tns:ctrlClear" wsam:Action="http://ws.pts.forkexec.com/PointsPortType/ctrlClearRequest" />
       <output message="tns:ctrlClearResponse" wsam:Action="http://ws.pts.forkexec.com/PointsPortType/ctrlClearResponse" />
     </operation>
-    <operation name="addPoints">
-      <input message="tns:addPoints" wsam:Action="http://ws.pts.forkexec.com/PointsPortType/addPointsRequest" />
-      <output message="tns:addPointsResponse" wsam:Action="http://ws.pts.forkexec.com/PointsPortType/addPointsResponse" />
-      <fault message="tns:InvalidEmailFault" name="InvalidEmailFault" wsam:Action="http://ws.pts.forkexec.com/PointsPortType/addPoints/Fault/InvalidEmailFault" />
-      <fault message="tns:InvalidPointsFault" name="InvalidPointsFault" wsam:Action="http://ws.pts.forkexec.com/PointsPortType/addPoints/Fault/InvalidPointsFault" />
+
+		<operation name="read">
+      <input message="tns:read" wsam:Action="http://ws.pts.forkexec.com/PointsPortType/readRequest" />
+      <output message="tns:readResponse" wsam:Action="http://ws.pts.forkexec.com/PointsPortType/readResponse" />
     </operation>
-    <operation name="spendPoints">
-      <input message="tns:spendPoints" wsam:Action="http://ws.pts.forkexec.com/PointsPortType/spendPointsRequest" />
-      <output message="tns:spendPointsResponse" wsam:Action="http://ws.pts.forkexec.com/PointsPortType/spendPointsResponse" />
-      <fault message="tns:InvalidEmailFault" name="InvalidEmailFault" wsam:Action="http://ws.pts.forkexec.com/PointsPortType/spendPoints/Fault/InvalidEmailFault" />
-      <fault message="tns:InvalidPointsFault" name="InvalidPointsFault" wsam:Action="http://ws.pts.forkexec.com/PointsPortType/spendPoints/Fault/InvalidPointsFault" />
-      <fault message="tns:NotEnoughBalanceFault" name="NotEnoughBalanceFault" wsam:Action="http://ws.pts.forkexec.com/PointsPortType/spendPoints/Fault/NotEnoughBalanceFault" />
+	<operation name="write">
+      <input message="tns:write" wsam:Action="http://ws.pts.forkexec.com/PointsPortType/writeRequest" />
+      <output message="tns:writeResponse" wsam:Action="http://ws.pts.forkexec.com/PointsPortType/writeResponse" />
     </operation>
   </portType>
 
@@ -284,7 +328,9 @@
         <soap:body use="literal" />
       </output>
     </operation>
-    <operation name="addPoints">
+
+	
+	    <operation name="read">
       <soap:operation soapAction="" />
       <input>
         <soap:body use="literal" />
@@ -292,14 +338,9 @@
       <output>
         <soap:body use="literal" />
       </output>
-      <fault name="InvalidEmailFault">
-        <soap:fault name="InvalidEmailFault" use="literal" />
-      </fault>
-      <fault name="InvalidPointsFault">
-        <soap:fault name="InvalidPointsFault" use="literal" />
-      </fault>
     </operation>
-    <operation name="spendPoints">
+	
+	 <operation name="write">
       <soap:operation soapAction="" />
       <input>
         <soap:body use="literal" />
@@ -307,16 +348,7 @@
       <output>
         <soap:body use="literal" />
       </output>
-      <fault name="InvalidEmailFault">
-        <soap:fault name="InvalidEmailFault" use="literal" />
-      </fault>
-      <fault name="InvalidPointsFault">
-        <soap:fault name="InvalidPointsFault" use="literal" />
-      </fault>
-      <fault name="NotEnoughBalanceFault">
-        <soap:fault name="NotEnoughBalanceFault" use="literal" />
-      </fault>
-    </operation>
+	   </operation>  
   </binding>
 
   <!--  Service defines ports. -->

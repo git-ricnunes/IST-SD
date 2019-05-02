@@ -26,9 +26,7 @@ public class PointsEndpointManager {
 	private PointsPortImpl portImpl = new PointsPortImpl(this);
 
 	/** Obtain Port implementation */
-	public PointsPortType getPort() {
-		return portImpl;
-	}
+
 
 	/** Web Service end point */
 	private Endpoint endpoint = null;

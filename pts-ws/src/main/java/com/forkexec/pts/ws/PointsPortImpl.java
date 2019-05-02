@@ -2,6 +2,7 @@ package com.forkexec.pts.ws;
 
 import javax.jws.WebService;
 
+import com.forkexec.pts.domain.Credit;
 import com.forkexec.pts.domain.Points;
 
 /**
@@ -9,12 +10,13 @@ import com.forkexec.pts.domain.Points;
  * below "map" the Java class to the WSDL definitions.
  */
 @WebService(endpointInterface = "com.forkexec.pts.ws.PointsPortType", wsdlLocation = "PointsService.wsdl", name = "PointsWebService", portName = "PointsPort", targetNamespace = "http://ws.pts.forkexec.com/", serviceName = "PointsService")
-public class PointsPortImpl implements PointsPortType {
+public class PointsPortImpl {
 
     /**
      * The Endpoint manager controls the Web Service instance during its whole
      * lifecycle.
      */
+	
     private final PointsEndpointManager endpointManager;
 
     /** Constructor receives a reference to the endpoint manager. */
@@ -24,7 +26,6 @@ public class PointsPortImpl implements PointsPortType {
 
     // Main operations -------------------------------------------------------
 
-    @Override
 	public void activateUser(final String userEmail) throws InvalidEmailFault_Exception, EmailAlreadyExistsFault_Exception   {
     	
     	try{
@@ -37,60 +38,50 @@ public class PointsPortImpl implements PointsPortType {
     	}
     }
 
-    @Override
     public int pointsBalance(final String userEmail) throws InvalidEmailFault_Exception {
     	int userCredit = 0;
-		try {
-			userCredit = Points.getInstance().getCredit(userEmail);
-		} catch (InvalidEmailFault_Exception e) {
-			throwInvalidEmail("Email not found: " + userEmail);
-		}
 		
       return userCredit;
     }
-
-    @Override
-    public int addPoints(final String userEmail, final int pointsToAdd)
-	    throws InvalidEmailFault_Exception, InvalidPointsFault_Exception {
-    	
-    	int userCredit =0;
-    	
-    	if(pointsToAdd <= 0 )
-    		throwInvalidPoints("Number of points are invalid: " + pointsToAdd);
-    	
-    	try {
-    		userCredit=Points.getInstance().addCredit(userEmail,pointsToAdd);
+    
+	public CreditView read(String userEmail) {
+		Credit userCredit = null;
+		try {
+			userCredit = Points.getInstance().getCredit(userEmail);
 		} catch (InvalidEmailFault_Exception e) {
-			throwInvalidEmail("Email not found: " + userEmail);
+			//ignore
 		}
-    	
-        return userCredit;
-    }
+		return buildCreditView(userCredit);
+	}
 
-    @Override
-    public int spendPoints(final String userEmail, final int pointsToSpend)
-	    throws InvalidEmailFault_Exception, InvalidPointsFault_Exception, NotEnoughBalanceFault_Exception {
-    	int userCredit=0;
-    	
-    	if(pointsToSpend <= 0 )
-    		throwInvalidPoints("Number of points are invalid: " + pointsToSpend);
-    	
-    	try {
-    		userCredit=Points.getInstance().subtractCredit(userEmail,pointsToSpend);
+	public CreditView write(String userEmail, int tag, int points) {
+		
+		int val = 0;
+		try {
+		val =	Points.getInstance().addCredit(userEmail,tag,points);
 		} catch (InvalidEmailFault_Exception e) {
-			throwInvalidEmail("Email not found: " + userEmail);
-		} catch (NotEnoughBalanceFault_Exception e){
-			throwNotEnoughBalance("Not enough credits: " + userEmail);
+		
 		}
-    	
-        return userCredit;
+	
+		return null;
+	}
+	
+	/** Helper to convert a domain object to a view. */
+	 private CreditView buildCreditView (Credit credit) {
+
+		 CreditView creditView = new CreditView();
 			
-    }
+		 creditView.setTag(credit.getTag());
+		 creditView.setValue(credit.getVal());
+
+		 return creditView;
+	 }
+
+	
 
     // Control operations ----------------------------------------------------
-    // TODO
     /** Diagnostic operation to check if service is running. */
-    @Override
+
     public String ctrlPing(String inputMessage) {
 	// If no input is received, return a default name.
 	if (inputMessage == null || inputMessage.trim().length() == 0)
@@ -108,7 +99,7 @@ public class PointsPortImpl implements PointsPortType {
 	return builder.toString();
     }
 
-	@Override
+	
 	public void ctrlInit(int startPoints) throws BadInitFault_Exception {
 
 		if(startPoints<=0)
@@ -118,7 +109,7 @@ public class PointsPortImpl implements PointsPortType {
 	}
 	
     /** Return all variables to default values. */
-    @Override
+    
     public void ctrlClear() {
         Points.getInstance().clear();    
     }
@@ -142,19 +133,6 @@ public class PointsPortImpl implements PointsPortType {
 		EmailAlreadyExistsFault faultInfo = new EmailAlreadyExistsFault();
 		faultInfo.setMessage(message);
 		throw new EmailAlreadyExistsFault_Exception(message, faultInfo);
-	}
-	
-	private void throwInvalidPoints(final String message) throws InvalidPointsFault_Exception {
-		InvalidPointsFault faultInfo = new InvalidPointsFault();
-		faultInfo.setMessage(message);
-		throw new InvalidPointsFault_Exception(message, faultInfo);
-	}
-	
-	
-	private void throwNotEnoughBalance(final String message) throws NotEnoughBalanceFault_Exception {
-		NotEnoughBalanceFault faultInfo = new NotEnoughBalanceFault();
-		faultInfo.setMessage(message);
-		throw new NotEnoughBalanceFault_Exception(message, faultInfo);
 	}
 
 }
